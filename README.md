@@ -17,6 +17,8 @@ A seguir, são apresentados os artefatos do laboratório atual (Laboratório 3).
 <!--# Diagrama de implantação
 ![Diagrama de implantação]()-->
 
+---
+
 # Histórias de Usuário
 
 ### Usuário 
@@ -51,8 +53,6 @@ Como aluno,
 Eu quero **receber um cupom por email com um código da troca realizada**  
 Para poder utilizar a vantagem presencialmente com a empresa parceira.
 
----
-
 ### Professor (especialização de Usuário)
 
 Como professor,  
@@ -66,9 +66,6 @@ Para manter meu saldo para usos futuros.
 Como professor,  
 Eu quero **enviar moedas para um aluno informando o motivo do reconhecimento**  
 Para valorizar comportamentos positivos como participação ou dedicação.
-
-
----
 
 ### Empresa Parceira (especialização de Usuário)
 
