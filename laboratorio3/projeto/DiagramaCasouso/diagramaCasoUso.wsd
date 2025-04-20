@@ -1,0 +1,31 @@
+@startuml
+actor Usuário
+actor Aluno 
+actor Professor
+actor Empresa
+ 
+rectangle SistemaMoedasAluno{
+    Usuário -- (Realizar login)
+    Usuário -- (Consultar Extrato)
+    Usuário -- (Consultar Saldo)
+    (Realizar login) <. (Cadastrar) : <<extends>>
+
+    Professor -- (Enviar Moedas)
+
+    Aluno -- (Trocar Moedas)
+    (Trocar Moedas) .> (Receber email com código de troca) : <<include>>
+    
+    
+    (Enviar Moedas) .> (Notificar Aluno destinatário por email) : <<include>>
+
+    Empresa -- (Cadastrar vantagens)
+    Empresa -- (Visualizar o código de troca enviado ao aluno)
+
+
+}
+Aluno -|> Usuário
+Professor -|> Usuário
+Empresa -|> Usuário
+
+
+@enduml
