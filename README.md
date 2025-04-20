@@ -35,7 +35,7 @@ Como usuário,
 Eu quero **consultar meu extrato**  
 Para acompanhar minha movimentação de moedas.
 
-### Aluno (especialização de Usuário)
+### Aluno 
 
 Como aluno,  
 Eu quero **me cadastrar informando meus dados pessoais e educacionais**  
@@ -53,7 +53,7 @@ Como aluno,
 Eu quero **receber um cupom por email com um código da troca realizada**  
 Para poder utilizar a vantagem presencialmente com a empresa parceira.
 
-### Professor (especialização de Usuário)
+### Professor 
 
 Como professor,  
 Eu quero **receber 1.000 moedas automaticamente a cada semestre**  
@@ -67,7 +67,7 @@ Como professor,
 Eu quero **enviar moedas para um aluno informando o motivo do reconhecimento**  
 Para valorizar comportamentos positivos como participação ou dedicação.
 
-### Empresa Parceira (especialização de Usuário)
+### Empresa Parceira 
 
 Como empresa parceira,  
 Eu quero **me cadastrar informando meus dados e vantagens oferecidas**  
