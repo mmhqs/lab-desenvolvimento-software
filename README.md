@@ -29,7 +29,7 @@ Para utilizar as funcionalidades de moedas de forma segura.
 
 Como usuário, 
 Eu quero **consultar meu saldo de moedas**  
-Para saber meu histórico e saldo atual. 
+Para saber meu saldo atual. 
 
 Como usuário,
 Eu quero **consultar meu extrato**  
