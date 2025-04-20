@@ -70,6 +70,14 @@ Para valorizar comportamentos positivos como participação ou dedicação.
 ### Empresa Parceira 
 
 Como empresa parceira,  
+Eu quero **me cadastrar informando meus dados e vantagens oferecidas**  
+Para participar do sistema e alcançar o público universitário.
+
+Como empresa parceira,
+Eu quero *fazer Login como empresa parceira*
+Para participar do sistema e cadastrar vantagens.
+
+Como empresa parceira,  
 Eu quero **cadastrar vantagens com descrição, imagem e custo em moedas**  
 Para torná-las disponíveis para resgate pelos alunos.
 
