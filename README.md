@@ -27,6 +27,10 @@ Como usuário,
 Eu quero **acessar o sistema com login e senha**  
 Para utilizar as funcionalidades de moedas de forma segura.
 
+Como usuário,  
+Eu quero **me cadastrar informando meus dados específicos**  
+Para participar do sistema de mérito como aluno ou empresa.
+
 Como usuário, 
 Eu quero **consultar meu saldo de moedas**  
 Para saber meu saldo atual. 
@@ -36,10 +40,6 @@ Eu quero **consultar meu extrato**
 Para acompanhar minha movimentação de moedas.
 
 ### Aluno 
-
-Como aluno,  
-Eu quero **me cadastrar informando meus dados pessoais e educacionais**  
-Para participar do sistema de mérito e poder receber moedas dos professores.
 
 Como aluno,  
 Eu quero **ser notificado por email ao receber moedas de um professor**  
@@ -68,10 +68,6 @@ Eu quero **enviar moedas para um aluno informando o motivo do reconhecimento**
 Para valorizar comportamentos positivos como participação ou dedicação.
 
 ### Empresa Parceira 
-
-Como empresa parceira,  
-Eu quero **me cadastrar informando meus dados e vantagens oferecidas**  
-Para participar do sistema e alcançar o público universitário.
 
 Como empresa parceira,  
 Eu quero **cadastrar vantagens com descrição, imagem e custo em moedas**  
