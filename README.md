@@ -3,10 +3,10 @@ Repositório da matéria de Laboratório de Desenvolvimento de Software da do cu
 A seguir, são apresentados os artefatos do laboratório atual (Laboratório 3).
 
 # Diagrama de caso de uso
-![Diagrama de caso de uso]()
+![Diagrama de caso de uso](laboratorio3/projeto/DiagramaCasouso/diagramaCasoUso.jpeg)
 
 # Diagrama de classes
-![Diagrama de classes]()
+![Diagrama de classes](laboratorio3/projeto/diagramaClasses/20250420_diagramaClasses.png)
 
 <!--# Diagrama de pacotes
 ![Diagrama de pacotes]()-->
