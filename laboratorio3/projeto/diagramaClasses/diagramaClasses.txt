@@ -1,0 +1,85 @@
+@startuml
+abstract class Usuario {
+-id: int
+-nome: String
+-email: String
+-senha: String
++autenticar(email: String, senha: String): boolean
+}
+
+class Aluno extends Usuario {
+- cpf: String
+- rg: String
+- endereco: String
+- curso: Curso
+- instituicaoEnsino: InstituicaoEnsino
+- saldoMoedas: int
++ consultarExtrato(): List<Transacao>
++ resgatarVantagem(vantagem: Vantagem): void
+}
+
+class Professor extends Usuario {
+- cpf: String
+- departamento: String
+- saldoMoedas: int
++ enviarMoedas(notificacao: NotificacaoEmail, quantidade: int): Transacao
++ consultarExtrato(): List<Transacao>
+}
+
+class EmpresaParceira extends Usuario {
+- cnpj: String
+- vantagens: List<Vantagem>
++ cadastrarVantagem(vantagem: Vantagem): void
+}
+
+
+class InstituicaoEnsino {
+- id: int
+- nome: String
+- endereco: String
+- professores: List<Professor>
+}
+
+class Curso {
+-id: int
+-nome: String
+}
+
+class Vantagem {
+- id: int
+- descricao: String
+- foto: String
+- custoMoedas: int
+- empresa: EmpresaParceira
+}
+
+class Transacao {
+- id: int
+- data: LocalDateTime
+- quantidadeMoedas: int
+- mensagem: String
+- remetente: Professor
+- destinatario: Aluno
+}
+
+class NotificacaoEmail {
+- destinatarios: List<Usuario>
+- mensagem: String
++ enviarTrocaMoedas(quantidadeMoedas: int): void
++ enviarResgateVantagem(codigo: CodigoTroca): void
+}
+
+class CodigoTroca {
+- valor: String
++ gerar(): String
+}
+
+Aluno "1..*" -- "1" InstituicaoEnsino
+Professor "1..*" -- "1..*" InstituicaoEnsino
+Aluno "1" -- "0..*" Transacao
+Professor "1" -- "0..*" Transacao
+EmpresaParceira "1" -- "0..*" Vantagem
+Curso "1..*" --"1..*" Aluno
+NotificacaoEmail *-- CodigoTroca
+Professor "1" -- "0..*" NotificacaoEmail
+@enduml
