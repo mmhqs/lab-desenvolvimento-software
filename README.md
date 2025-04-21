@@ -12,7 +12,7 @@ A seguir, são apresentados os artefatos do laboratório atual (Laboratório 3).
 ![Diagrama de pacotes]()-->
 
 # Diagrama de componentes
-![Diagrama de componentes]()
+![Diagrama de componentes](laboratorio3/projeto/DiagramaDeComponentes/deComponentes.png)
 
 <!--# Diagrama de implantação
 ![Diagrama de implantação]()-->
