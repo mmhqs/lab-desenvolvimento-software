@@ -1,0 +1,40 @@
+@startuml
+node Computador { 
+[Browser]
+}
+
+node AplicacaoWeb {
+}
+
+Computador  -- AplicacaoWeb : HTTP
+AplicacaoWeb -- ServidorAplicacao : HTTP
+
+node ServidorAplicacao {
+[AutenticacaoUsuario]
+[GestaoSaldoMoedas]
+[GestaoVantagens]
+[NotificacaoAluno]
+[EnvioMoedas]
+[ConsultaExtrato]
+[ResgateVantagem]
+[CadastroVantagem]
+[EnvioCupom]
+[NotificacaoParceiro]
+}
+
+[AutenticacaoUsuario] ..> [GestaoSaldoMoedas]
+[AutenticacaoUsuario] ..> [GestaoVantagens]
+[GestaoVantagens] ..> [CadastroVantagem]
+[GestaoSaldoMoedas] ..> [EnvioMoedas]
+[EnvioMoedas] ..> [NotificacaoAluno]
+[GestaoSaldoMoedas] ..> [ConsultaExtrato]
+[GestaoSaldoMoedas] ..> [ResgateVantagem]
+[ResgateVantagem] ..> [EnvioCupom]
+[ResgateVantagem] ..> [NotificacaoParceiro]
+
+node BancoDeDados {
+[SGBD]
+}
+
+ServidorAplicacao -- BancoDeDados : HTTP
+@enduml
