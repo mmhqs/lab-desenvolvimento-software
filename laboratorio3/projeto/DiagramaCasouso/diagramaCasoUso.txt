@@ -1,0 +1,27 @@
+@startuml
+left to right direction
+
+actor Usuario
+actor Aluno 
+actor Professor
+actor Empresa
+
+Aluno -|> Usuario
+Professor -|> Usuario
+Empresa -|> Usuario
+ 
+rectangle SistemaMoedasAluno {
+    Usuario -- (Realizar login)
+    Usuario -- (Realizar cadastro)
+
+    Professor --> (Enviar moedas para um aluno)
+    Professor -- (Consultar extrato e saldo de moedas)
+
+    Aluno -- (Trocar moedas por vantagens)
+    Aluno  -- (Consultar extrato e saldo de moedas)
+    
+    (Enviar moedas para um aluno) --> Aluno
+
+    Empresa -- (Cadastrar vantagens)
+}
+@enduml
