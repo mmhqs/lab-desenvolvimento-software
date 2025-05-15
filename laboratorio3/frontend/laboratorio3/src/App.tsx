@@ -6,6 +6,9 @@ import Login from './features/Login';
 import CadastroVantagem from './features/CadastroVantagem';
 import ResgateVantagem from './features/ResgateVantagem';
 import ExtratoAluno from './features/ExtratoAluno';
+import ConsultaUsuario from './features/ConsultaUsuario';
+import EdicaoUsuario from './features/EdicaoUsuario';
+import ExclusaoUsuario from './features/ExclusaoUsuario';
 
 const App: React.FC = () => {
   return (
@@ -17,6 +20,9 @@ const App: React.FC = () => {
         <Route path="/vantagem" element={<CadastroVantagem />} />
         <Route path="/vantagem/resgate" element={<ResgateVantagem />} />
         <Route path="/extrato" element={<ExtratoAluno />} />
+        <Route path="/usuario/consulta" element={<ConsultaUsuario />} />
+        <Route path="/usuario/edicao" element={<EdicaoUsuario />} />
+        <Route path="/usuario/exclusao" element={<ExclusaoUsuario />} />
       </Routes>
     </BrowserRouter>
   );
