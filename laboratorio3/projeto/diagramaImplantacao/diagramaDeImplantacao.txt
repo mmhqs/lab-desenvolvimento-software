@@ -1,0 +1,21 @@
+@startuml
+node Computador { 
+[Browser]
+}
+
+
+Computador  -- ServidorAplicacao : HTTP
+
+node ServidorAplicacao {
+[Gerenciamento de Usuário]
+[Gerenciamento de Vantagens das Empresas]
+[Gerenciamento de Transações]
+}
+
+
+node BancoDeDados {
+[SGBD]
+}
+
+ServidorAplicacao -- BancoDeDados : HTTP
+@enduml

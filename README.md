@@ -8,15 +8,15 @@ A seguir, são apresentados os artefatos do laboratório atual (Laboratório 3).
 # Diagrama de classes
 ![Diagrama de classes](laboratorio3/projeto/diagramaClasses/diagramaClasses.png)
 
-<!--# Diagrama de pacotes
-![Diagrama de pacotes]()-->
 
 # Diagrama de componentes
-![Diagrama de componentes](laboratorio3/projeto/DiagramaDeComponentes/deComponentes.png)
+![Diagrama de componentes](laboratorio3/projeto/DiagramaDeComponentes/diagramaComponentes.png)
 
-<!--# Diagrama de implantação
-![Diagrama de implantação]()-->
+# Diagrama de implantação
+[Diagrama de implantação](laboratorio3/projeto/diagramaImplantacao/diagramaDeImplantacao.png)
 
+<!--# Diagrama de pacotes
+![Diagrama de pacotes]()-->
 ---
 
 # Histórias de Usuário
