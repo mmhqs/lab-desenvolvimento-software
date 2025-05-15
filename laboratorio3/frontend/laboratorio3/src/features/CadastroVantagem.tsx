@@ -78,20 +78,6 @@ const CadastroVantagem = () => {
                 }
               }}
             />
-            <TextField
-              select
-              label="Empresa Parceira"
-              fullWidth
-              margin="normal"
-              value={empresa}
-              onChange={(e) => setEmpresa(e.target.value)}
-            >
-              {empresasParceiras.map((empresa) => (
-                <MenuItem key={empresa.id} value={empresa.id}>
-                  {empresa.nome}
-                </MenuItem>
-              ))}
-            </TextField>
             <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
               Cadastrar
             </Button>
