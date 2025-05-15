@@ -3,10 +3,10 @@ Repositório da matéria de Laboratório de Desenvolvimento de Software da do cu
 A seguir, são apresentados os artefatos do laboratório atual (Laboratório 3).
 
 # Diagrama de caso de uso
-![Diagrama de caso de uso](laboratorio3/projeto/DiagramaCasouso/diagramaCasoUso.jpeg)
+![Diagrama de caso de uso](laboratorio3/projeto/DiagramaCasouso/diagramaCasoDeUso.png)
 
 # Diagrama de classes
-![Diagrama de classes](laboratorio3/projeto/diagramaClasses/20250420_diagramaClasses.png)
+![Diagrama de classes](laboratorio3/projeto/diagramaClasses/diagramaClasses.png)
 
 <!--# Diagrama de pacotes
 ![Diagrama de pacotes]()-->
@@ -29,15 +29,11 @@ Para utilizar as funcionalidades de moedas de forma segura.
 
 Como usuário,  
 Eu quero **me cadastrar informando meus dados específicos**  
-Para participar do sistema de mérito como aluno ou empresa.
+Para participar do sistema de mérito como aluno, empresa ou professor.
 
 Como usuário, 
-Eu quero **consultar meu saldo de moedas**  
-Para saber meu saldo atual. 
-
-Como usuário,
-Eu quero **consultar meu extrato**  
-Para acompanhar minha movimentação de moedas.
+Eu quero **consultar meu extrato de transações**  
+ParaPara acompanhar minha movimentação de moedas e saber meu saldo de moedas.
 
 ### Aluno 
 
@@ -56,14 +52,6 @@ Para poder utilizar a vantagem presencialmente com a empresa parceira.
 ### Professor 
 
 Como professor,  
-Eu quero **receber 1.000 moedas automaticamente a cada semestre**  
-Para poder reconhecer alunos durante o período letivo.
-
-Como professor,  
-Eu quero **acumular moedas não utilizadas entre os semestres**  
-Para manter meu saldo para usos futuros.
-
-Como professor,  
 Eu quero **enviar moedas para um aluno informando o motivo do reconhecimento**  
 Para valorizar comportamentos positivos como participação ou dedicação.
 
@@ -72,10 +60,6 @@ Para valorizar comportamentos positivos como participação ou dedicação.
 Como empresa parceira,  
 Eu quero **me cadastrar informando meus dados e vantagens oferecidas**  
 Para participar do sistema e alcançar o público universitário.
-
-Como empresa parceira,
-Eu quero *fazer Login como empresa parceira*
-Para participar do sistema e cadastrar vantagens.
 
 Como empresa parceira,  
 Eu quero **cadastrar vantagens com descrição, imagem e custo em moedas**  
