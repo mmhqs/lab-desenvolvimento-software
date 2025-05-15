@@ -51,6 +51,7 @@ class Vantagem {
 - descricao: String
 - foto: String
 - custoMoedas: int
+
 }
 
 class Transacao {
