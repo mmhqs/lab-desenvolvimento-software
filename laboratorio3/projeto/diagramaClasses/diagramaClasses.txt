@@ -47,6 +47,7 @@ class Curso {
 
 class Vantagem {
 - id: int
+- nome: String
 - descricao: String
 - foto: String
 - custoMoedas: int
