@@ -50,7 +50,7 @@ class Vantagem {
 - descricao: String
 - foto: String
 - custoMoedas: int
-- empresa: EmpresaParceira
+
 }
 
 class Transacao {
@@ -58,8 +58,8 @@ class Transacao {
 - data: LocalDateTime
 - quantidadeMoedas: int
 - mensagem: String
-- remetente: Professor
-- destinatario: Aluno
+- remetente: Usuario
+- destinatario: Usuario
 }
 
 class NotificacaoEmail {
