@@ -67,7 +67,6 @@ entity VANTAGEM {
   * descricao: varchar(255)
   * foto: varchar(255)
   * custo_moedas: int
-  * empresa_id: int <<FK>>
 }
 
 entity TRANSACAO {
@@ -76,8 +75,8 @@ entity TRANSACAO {
   * data: timestamp
   * quantidade_moedas: int
   * mensagem: text
-  * professor_id: int <<FK>>
-  * aluno_id: int <<FK>>
+  * remetente_id: int <<FK>>
+  * destinatario_id: int <<FK>>
 }
 
 entity NOTIFICACAO_EMAIL {
