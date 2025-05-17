@@ -64,11 +64,51 @@ const del = (req, res) => {
         .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
 };
 
+const login = async (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({ error: "Email e senha são obrigatórios." });
+    }
+
+    try {
+        const usuario = await usuarioModel.getByEmail(email);
+        
+        if (!usuario) {
+            return res.status(401).json({ error: "Credenciais inválidas." });
+        }
+        if (usuario.senha !== senha) {
+            return res.status(401).json({ error: "Credenciais inválidas." });
+        }
+        
+        const perfil = await usuarioModel.getPerfilByUsuarioId(usuario.id);
+        
+        if (!perfil) {
+            return res.status(404).json({ error: "Perfil não encontrado para este usuário." });
+        }
+        
+        res.status(200).json({
+            usuario: {
+                id: usuario.id,
+                nome: usuario.nome,
+                email: usuario.email
+            },
+            tipo: perfil.tipo,
+            perfil: perfil.dados
+        });
+        
+    } catch (err) {
+        console.error('Erro no login:', err);
+        res.status(500).json({ error: err.message || 'Erro interno do servidor' });
+    }
+};
+
 module.exports = {
     getAll,
     getById,
     getByEmail,
     post,
     put,
-    del
+    del,
+    login
 };

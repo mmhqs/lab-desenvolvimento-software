@@ -18,5 +18,8 @@ router.delete('/:id', (req, res) => {
     usuarioController.del(req, res);
 });
 
+router.get('/login', (req, res) => {
+    usuarioController.login(req, res);
+});
 
 module.exports = router;

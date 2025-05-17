@@ -52,6 +52,28 @@ const del = async (id) => {
     return result.affectedRows > 0;
 };
 
+const getPerfilByUsuarioId = async (usuario_id) => {
+    const [aluno] = await conn.query(
+        'SELECT * FROM aluno WHERE usuario_id = ?', 
+        [usuario_id]
+    );
+    
+    if (aluno.length > 0) {
+        return { tipo: 'aluno', dados: aluno[0] };
+    }
+    
+    const [empresa] = await conn.query(
+        'SELECT * FROM empresa_parceira WHERE usuario_id = ?', 
+        [usuario_id]
+    );
+    
+    if (empresa.length > 0) {
+        return { tipo: 'empresa', dados: empresa[0] };
+    }
+    
+    return null;
+};
+
 module.exports = {
     getAll,
     getById,
@@ -59,5 +81,6 @@ module.exports = {
     emailExists,
     post,
     put,
-    del
+    del,
+    getPerfilByUsuarioId
 };
