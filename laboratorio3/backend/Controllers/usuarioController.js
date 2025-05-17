@@ -30,10 +30,25 @@ const getByEmail = (req, res) => {
 
 const post = (req, res) => {
     const { nome, email, senha } = req.body;
-            
-        usuarioModel.post(nome, email, senha)
+    
+    if (!nome || !email || !senha) {
+        return res.status(400).json({ error: "Nome, email e senha são obrigatórios." });
+    }
+
+    usuarioModel.getByEmail(email)
+        .then(existingUser => {
+            if (existingUser) {
+                throw new Error("Já existe um usuário com este email.");
+            }
+            return usuarioModel.post(nome, email, senha);
+        })
         .then(() => res.status(201).json("Usuário criado com sucesso."))
-        .catch(err => res.status(500).json({ error: err['sqlMessage'] || err.message }));
+        .catch(err => {
+            if (err.message === "Já existe um usuário com este email.") {
+                return res.status(409).json({ error: err.message });
+            }
+            res.status(500).json({ error: err['sqlMessage'] || err.message });
+        });
 };
 
 const put = (req, res) => {
@@ -46,14 +61,36 @@ const put = (req, res) => {
                 throw new Error("Usuário não encontrado.");
             }
 
-            nome = nome || data.nome;
-            email = email || data.email;
-            senha = senha || data.senha;
-
-            return usuarioModel.put(id, nome, email, senha);
+            if (email && email !== data.email) {
+                return usuarioModel.getByEmail(email)
+                    .then(existingUser => {
+                        if (existingUser) {
+                            throw new Error("Já existe um usuário com este email.");
+                        }
+                        nome = nome || data.nome;
+                        email = email || data.email;
+                        senha = senha || data.senha;
+                        
+                        return usuarioModel.put(id, nome, email, senha);
+                    });
+            } else {
+                nome = nome || data.nome;
+                email = email || data.email;
+                senha = senha || data.senha;
+                
+                return usuarioModel.put(id, nome, email, senha);
+            }
         })
         .then(() => res.status(200).json("Usuário atualizado com sucesso."))
-        .catch(err => res.status(500).json({ error: err['sqlMessage'] || err.message }));
+        .catch(err => {
+            if (err.message === "Usuário não encontrado.") {
+                return res.status(404).json({ error: err.message });
+            }
+            if (err.message === "Já existe um usuário com este email.") {
+                return res.status(409).json({ error: err.message });
+            }
+            res.status(500).json({ error: err['sqlMessage'] || err.message });
+        });
 };
 
 const del = (req, res) => {

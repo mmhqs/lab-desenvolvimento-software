@@ -1,4 +1,5 @@
 const empresaParceiraModel = require('../Models/empresaParceiraModel');
+const helperModel = require('../Models/helper');
 
 const getAll = (req, res) => {
     empresaParceiraModel.getAll()
@@ -28,12 +29,31 @@ const getByUsuarioId = (req, res) => {
         .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
 };
 
-const post = (req, res) => {
+const post = async (req, res) => {
     const { cnpj, usuario_id } = req.body;
-            
+
+    const tipoUsuario = await helperModel.verificarTipoUsuario(usuario_id);
+
+    if (tipoUsuario.isAluno) {
+        return res.status(400).json({
+            error: "Este usuário já está cadastrado como aluno."
+        });
+    }
+
     empresaParceiraModel.post(cnpj, usuario_id)
         .then(() => res.status(201).json("Empresa parceira criada com sucesso."))
         .catch(err => res.status(500).json({ error: err['sqlMessage'] || err.message }));
+
+    try {
+        if (await empresaParceiraModel.cnpjExists(cnpj)) {
+            return res.status(400).json({ error: "CNPJ já cadastrado." });
+        }
+
+        await empresaParceiraModel.post(cnpj, usuario_id);
+        return res.status(201).json("Empresa parceira criada com sucesso.");
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 };
 
 const put = (req, res) => {
