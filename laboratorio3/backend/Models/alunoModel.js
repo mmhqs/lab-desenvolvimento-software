@@ -86,11 +86,10 @@ const removerMoedas = async (cpf, quantidade) => {
 };
 
 const resgatarVantagem = async (cpfAluno, idVantagem) => {
-    // Inicia transação
+
     await conn.query('START TRANSACTION');
     
     try {
-        // 1. Verifica se a vantagem existe e obtém seu custo
         const [vantagem] = await conn.query(
             'SELECT custo_moedas FROM vantagem WHERE id = ? FOR UPDATE',
             [idVantagem]
@@ -102,7 +101,6 @@ const resgatarVantagem = async (cpfAluno, idVantagem) => {
         
         const custo = vantagem[0].custo_moedas;
         
-        // 2. Verifica saldo do aluno
         const [aluno] = await conn.query(
             'SELECT saldo_moedas FROM aluno WHERE cpf = ? FOR UPDATE',
             [cpfAluno]
@@ -116,19 +114,16 @@ const resgatarVantagem = async (cpfAluno, idVantagem) => {
             throw new Error('Saldo insuficiente');
         }
         
-        // 3. Atualiza saldo do aluno
         await conn.query(
             'UPDATE aluno SET saldo_moedas = saldo_moedas - ? WHERE cpf = ?',
             [custo, cpfAluno]
         );
         
-        // 4. Registra o resgate
         const [result] = await conn.query(
             'INSERT INTO aluno_vantagem (id_aluno, id_vantagem) VALUES (?, ?)',
             [cpfAluno, idVantagem]
         );
         
-        // Commit se tudo ocorrer bem
         await conn.query('COMMIT');
         
         return {
@@ -137,7 +132,6 @@ const resgatarVantagem = async (cpfAluno, idVantagem) => {
             registroId: result.insertId
         };
     } catch (error) {
-        // Rollback em caso de erro
         await conn.query('ROLLBACK');
         throw error;
     }

@@ -21,7 +21,6 @@ const getAll = async () => {
     const empresasQuery = `SELECT * FROM ${table}`;
     const [empresasRows] = await conn.query(empresasQuery);
     
-    // Para cada empresa, buscar suas vantagens
     const empresasComVantagens = await Promise.all(
         empresasRows.map(async (empresa) => {
             const [vantagensRows] = await conn.query(
