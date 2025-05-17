@@ -78,13 +78,14 @@ const del = async (cnpj) => {
 const addVantagem = async (empresa_cnpj, vantagemData) => {
     const query = `
         INSERT INTO vantagem 
-        (id, custo_moedas, descricao, empresa_cnpj)
-        VALUES (?, ?, ?, ?)
+        (id, custo_moedas, descricao, foto, empresa_cnpj)
+        VALUES (?, ?, ?, ?, ?)
     `;
     const [result] = await conn.query(query, [
         vantagemData.id,
         vantagemData.custo_moedas,
         vantagemData.descricao,
+        vantagemData.foto,
         empresa_cnpj
     ]);
     return result;
