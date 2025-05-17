@@ -15,17 +15,15 @@ app.use(session({
 }));
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3001', 'http://127.0.0.1:5173', 'http://127.0.0.1:3001'], 
+    origin: ['http://localhost:5173', 'http://localhost:8080', 'http://127.0.0.1:5173', 'http://127.0.0.1:3001'], 
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
     allowedHeaders: ['Content-Type', 'Authorization'], 
     credentials: true 
 }));
 
-// Middleware para parsear JSON e URL-encoded
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Usando o path para servir arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
@@ -33,13 +31,8 @@ app.use((req, res, next) => {
   next();
 });
 
-
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'public', 'index.html'));
-// });
-
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.listen(8080, () => {
+  console.log('Server rodando na porta 8080');
 });
 
 app.use((req, res) => {
