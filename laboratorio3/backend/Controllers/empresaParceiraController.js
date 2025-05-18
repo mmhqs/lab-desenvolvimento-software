@@ -32,27 +32,23 @@ const getByUsuarioId = (req, res) => {
 const post = async (req, res) => {
     const { cnpj, usuario_id } = req.body;
 
-    const tipoUsuario = await helperModel.verificarTipoUsuario(usuario_id);
-
-    if (tipoUsuario.isAluno) {
-        return res.status(400).json({
-            error: "Este usuário já está cadastrado como aluno."
-        });
-    }
-
-    empresaParceiraModel.post(cnpj, usuario_id)
-        .then(() => res.status(201).json("Empresa parceira criada com sucesso."))
-        .catch(err => res.status(500).json({ error: err['sqlMessage'] || err.message }));
-
     try {
+        const tipoUsuario = await helperModel.verificarTipoUsuario(usuario_id);
+        if (tipoUsuario.isAluno) {
+            return res.status(400).json({
+                error: "Este usuário já está cadastrado como aluno."
+            });
+        }
+
         if (await empresaParceiraModel.cnpjExists(cnpj)) {
             return res.status(400).json({ error: "CNPJ já cadastrado." });
         }
 
         await empresaParceiraModel.post(cnpj, usuario_id);
         return res.status(201).json("Empresa parceira criada com sucesso.");
+        
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err['sqlMessage'] || err.message });
     }
 };
 
@@ -102,6 +98,12 @@ const removeVantagem = (req, res) => {
         .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
 };
 
+const getAllVantagens = (req, res) => {
+    empresaParceiraModel.getAllVantagens()
+        .then(data => res.status(200).json(data))
+        .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
+};
+
 module.exports = {
     getAll,
     getByCnpj,
@@ -110,5 +112,6 @@ module.exports = {
     put,
     del,
     addVantagem,
-    removeVantagem
+    removeVantagem,
+    getAllVantagens
 };

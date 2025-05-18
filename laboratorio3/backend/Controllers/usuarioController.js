@@ -42,7 +42,12 @@ const post = (req, res) => {
             }
             return usuarioModel.post(nome, email, senha);
         })
-        .then(() => res.status(201).json("Usuário criado com sucesso."))
+        .then(insertId => {
+            return usuarioModel.getById(insertId);
+        })
+        .then(novoUsuario => {
+            res.status(201).json(novoUsuario);
+        })
         .catch(err => {
             if (err.message === "Já existe um usuário com este email.") {
                 return res.status(409).json({ error: err.message });
