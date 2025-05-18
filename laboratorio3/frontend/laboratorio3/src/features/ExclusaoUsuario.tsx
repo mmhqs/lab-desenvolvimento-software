@@ -26,26 +26,28 @@ const ExclusaoUsuario: React.FC = () => {
         nome: '',
         email: ''
     });
-    const [error, setError] = useState('');
+    const [erro, setErro] = useState('');
 
     useEffect(() => {
-        const fetchUsuario = async () => {
+        const carregarUsuario = async () => {
             try {
-                const response = await axios.get(`http://localhost:3000/usuario/${id}`);
-                setUsuario(response.data);
-            } catch (error) {
-                setError('Erro ao carregar dados do usuário');
+                const resposta = await axios.get(`http://localhost:3001/usuario/${id}`);
+                setUsuario(resposta.data);
+            } catch (erro) {
+                setErro('Erro ao carregar dados do usuário');
             }
         };
-        fetchUsuario();
+        if (id) {
+            carregarUsuario();
+        }
     }, [id]);
 
     const handleDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3000/usuario/${id}`);
+            await axios.delete(`http://localhost:3001/usuario/${id}`);
             navigate('/usuario/consulta');
-        } catch (error) {
-            setError('Erro ao excluir usuário');
+        } catch (erro) {
+            setErro('Erro ao excluir usuário');
         }
     };
 
@@ -57,7 +59,7 @@ const ExclusaoUsuario: React.FC = () => {
                     Excluir Usuário
                 </Typography>
                 
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                {erro && <Alert severity="error" sx={{ mb: 2 }}>{erro}</Alert>}
                 
                 <Card sx={{ mt: 2 }}>
                     <CardContent>
@@ -80,7 +82,7 @@ const ExclusaoUsuario: React.FC = () => {
                             </Button>
                             <Button
                                 variant="outlined"
-                                onClick={() => navigate('/home')}
+                                onClick={() => navigate('/usuario/consulta')}
                             >
                                 Cancelar
                             </Button>

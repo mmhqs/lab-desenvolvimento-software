@@ -21,8 +21,8 @@ const App: React.FC = () => {
         <Route path="/vantagem/resgate" element={<ResgateVantagem />} />
         <Route path="/extrato" element={<ExtratoAluno />} />
         <Route path="/usuario/consulta" element={<ConsultaUsuario />} />
-        <Route path="/usuario/edicao" element={<EdicaoUsuario />} />
-        <Route path="/usuario/exclusao" element={<ExclusaoUsuario />} />
+        <Route path="/usuario/edicao/:id" element={<EdicaoUsuario />} />
+        <Route path="/usuario/exclusao/:id" element={<ExclusaoUsuario />} />
       </Routes>
     </BrowserRouter>
   );
