@@ -1,34 +1,32 @@
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
-import { LogOut } from 'react-feather';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-const Header = () => {
+const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <AppBar position="fixed">
-      <Toolbar
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        {/* Espaço para alinhar ao centro com flexGrow */}
-        <Box sx={{ flexGrow: 1, textAlign: 'center' }}>
-          <Typography variant="h6" component="div">
-            Sistema de moedas e vantagens
-          </Typography>
-        </Box>
-
-        {/* Botão à direita */}
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ ml: 'auto' }} // empurra para a direita
-        >
-          <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
-            Logout
-            <LogOut size={18} />
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Sistema de Mérito
+        </Typography>
+        {user && (
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="body1">
+              Olá, {user.nome}
+            </Typography>
+            <Button color="inherit" onClick={handleLogout}>
+              Sair
+            </Button>
           </Box>
-        </Button>
+        )}
       </Toolbar>
     </AppBar>
   );

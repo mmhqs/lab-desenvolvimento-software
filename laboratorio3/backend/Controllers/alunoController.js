@@ -11,16 +11,36 @@ const getByCpf = (req, res) => {
 
     alunoModel.getByCpf(cpf)
         .then(data => {
-            if (data) { 
-                return res.status(200).json(data);
-            } else {
-                return res.status(404).json({ message: "Aluno não encontrado." });
-            }
+            if (data) return res.status(200).json(data);
+            return res.status(404).json({ error: "Aluno não encontrado." });
         })
-        .catch(err => {
-            console.error('Erro ao buscar aluno por CPF:', err);
-            res.status(500).json({ error: err.message || err['sqlMessage'] || 'Erro interno do servidor' });
-        });
+        .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
+};
+
+const getSaldo = (req, res) => {
+    const cpf = req.params.cpf;
+
+    alunoModel.getByCpf(cpf)
+        .then(data => {
+            if (!data) {
+                return res.status(404).json({ error: "Aluno não encontrado." });
+            }
+            return res.status(200).json({ saldo_moedas: data.saldo_moedas });
+        })
+        .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
+};
+
+const getTransacoes = (req, res) => {
+    const cpf = req.params.cpf;
+
+    alunoModel.getTransacoes(cpf)
+        .then(data => {
+            if (!data) {
+                return res.status(404).json({ error: "Aluno não encontrado." });
+            }
+            return res.status(200).json(data);
+        })
+        .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
 };
 
 const getByUsuarioId = (req, res) => {
@@ -29,7 +49,7 @@ const getByUsuarioId = (req, res) => {
     alunoModel.getByUsuarioId(usuario_id)
         .then(data => {
             if (data) return res.status(200).json(data);
-            return res.status(404).json("Aluno não encontrado para este usuário.");
+            return res.status(404).json({ error: "Aluno não encontrado para este usuário." });
         })
         .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
 };
@@ -165,6 +185,8 @@ module.exports = {
     getAll,
     getByCpf,
     getByUsuarioId,
+    getSaldo,
+    getTransacoes,
     post,
     put,
     del,

@@ -1,5 +1,5 @@
 import './App.css'
-import { Route, BrowserRouter, Routes } from 'react-router-dom';
+import { Route, BrowserRouter, Routes, Navigate } from 'react-router-dom';
 import Homepage from './features/Homepage';
 import Login from './features/Login';
 import CadastroVantagem from './features/CadastroVantagem';
@@ -8,6 +8,12 @@ import ExtratoAluno from './features/ExtratoAluno';
 import ConsultaUsuario from './features/ConsultaUsuario';
 import EdicaoUsuario from './features/EdicaoUsuario';
 import ExclusaoUsuario from './features/ExclusaoUsuario';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+};
 import CadastroUsuario from './features/CadastroUsuario';
 
 const App: React.FC = () => {
