@@ -27,27 +27,35 @@ const EdicaoUsuario: React.FC = () => {
         email: '',
         senha: ''
     });
-    const [error, setError] = useState('');
+    const [erro, setErro] = useState('');
 
     useEffect(() => {
-        const fetchUsuario = async () => {
+        const carregarUsuario = async () => {
+            if (!id) return;
+            
             try {
-                const response = await axios.get(`http://localhost:3000/usuario/${id}`);
-                setUsuario(response.data);
-            } catch (error) {
-                setError('Erro ao carregar dados do usuário');
+                console.log('Carregando usuário com ID:', id);
+                const resposta = await axios.get(`http://localhost:3001/usuario/${id}`);
+                console.log('Dados recebidos:', resposta.data);
+                setUsuario(resposta.data);
+            } catch (erro) {
+                console.error('Erro ao carregar usuário:', erro);
+                setErro('Erro ao carregar dados do usuário');
             }
         };
-        fetchUsuario();
+        carregarUsuario();
     }, [id]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!id) return;
+
         try {
-            await axios.put(`http://localhost:3000/usuario/${id}`, usuario);
+            await axios.put(`http://localhost:3001/usuario/${id}`, usuario);
             navigate('/usuario/consulta');
-        } catch (error) {
-            setError('Erro ao atualizar usuário');
+        } catch (erro) {
+            console.error('Erro ao atualizar usuário:', erro);
+            setErro('Erro ao atualizar usuário');
         }
     };
 
@@ -64,10 +72,10 @@ const EdicaoUsuario: React.FC = () => {
             <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
                 <Typography variant="h4" gutterBottom>
-                    Editar Usuário
+                    Editar Usuário {id}
                 </Typography>
                 
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                {erro && <Alert severity="error" sx={{ mb: 2 }}>{erro}</Alert>}
                 
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
                     <TextField
@@ -109,7 +117,7 @@ const EdicaoUsuario: React.FC = () => {
                         </Button>
                         <Button
                             variant="outlined"
-                            onClick={() => navigate('/home')}
+                            onClick={() => navigate('/usuario/consulta')}
                         >
                             Cancelar
                         </Button>

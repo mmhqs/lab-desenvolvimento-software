@@ -84,29 +84,7 @@ const Homepage: React.FC = () => {
                 <UserCheck />
               </Box>
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/usuario/edicao")}
-              style={{ width: "10rem" }}
-            >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                Editar Usuário
-                <CheckCircle />
-              </Box>
-            </Button>
-
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/usuario/exclusao")}
-              style={{ width: "10rem" }}
-            >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                Excluir Usuário
-                <Clipboard />
-              </Box>
-            </Button>
+            
           </Box>
         </Box>
       </Container>

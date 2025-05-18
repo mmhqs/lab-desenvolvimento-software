@@ -1,5 +1,7 @@
 // src/pages/ConsultaUsuarios.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Container,
   Typography,
@@ -10,6 +12,7 @@ import {
   TableBody,
   Button,
   Box,
+  Alert,
 } from '@mui/material';
 import Header from '../components/Header';
 
@@ -24,87 +27,83 @@ type Usuario = {
   tipoUsuario: TipoUsuario;
 };
 
-// Mock de usuários
-const usuariosMock: Usuario[] = [
-  {
-    id: 1,
-    nome: 'João Silva',
-    email: 'joao@email.com',
-    cpf: '123.456.789-00',
-    tipoUsuario: 'Aluno',
-  },
-  {
-    id: 2,
-    nome: 'Empresa ABC',
-    email: 'contato@empresa.com',
-    cnpj: '12.345.678/0001-99',
-    tipoUsuario: 'Empresa',
-  },
-];
-
 const ConsultaUsuario: React.FC = () => {
+  const navigate = useNavigate();
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [erro, setErro] = useState('');
+
+  useEffect(() => {
+    const carregarUsuarios = async () => {
+      try {
+        const resposta = await axios.get('http://localhost:3001/usuario');
+        setUsuarios(resposta.data);
+      } catch (erro) {
+        setErro('Erro ao carregar usuários');
+      }
+    };
+    carregarUsuarios();
+  }, []);
+
   const handleEditar = (usuario: Usuario) => {
-    alert(`Editar usuário: ${usuario.nome}`);
+    navigate(`/usuario/edicao/${usuario.id}`);
   };
 
   const handleDeletar = (usuario: Usuario) => {
-    const confirmar = window.confirm(`Deseja realmente deletar ${usuario.nome}?`);
-    if (confirmar) {
-      alert(`Usuário ${usuario.nome} deletado.`);
-      // Aqui você faria a chamada de deleção na API
-    }
+    navigate(`/usuario/exclusao/${usuario.id}`);
   };
 
   return (
     <>
-    <Header />
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Consulta de Usuários
-      </Typography>
+      <Header />
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Consulta de Usuários
+        </Typography>
 
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Nome</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>CPF/CNPJ</TableCell>
-            <TableCell>Tipo</TableCell>
-            <TableCell align="center">Ações</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {usuariosMock.map((usuario) => (
-            <TableRow key={usuario.id}>
-              <TableCell>{usuario.id}</TableCell>
-              <TableCell>{usuario.nome}</TableCell>
-              <TableCell>{usuario.email}</TableCell>
-              <TableCell>{usuario.cpf || usuario.cnpj}</TableCell>
-              <TableCell>{usuario.tipoUsuario}</TableCell>
-              <TableCell align="center">
-                <Box display="flex" gap={1} justifyContent="center">
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleEditar(usuario)}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() => handleDeletar(usuario)}
-                  >
-                    Deletar
-                  </Button>
-                </Box>
-              </TableCell>
+        {erro && <Alert severity="error" sx={{ mb: 2 }}>{erro}</Alert>}
+
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Nome</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>CPF/CNPJ</TableCell>
+              <TableCell>Tipo</TableCell>
+              <TableCell align="center">Ações</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Container>
+          </TableHead>
+          <TableBody>
+            {usuarios.map((usuario) => (
+              <TableRow key={usuario.id}>
+                <TableCell>{usuario.id}</TableCell>
+                <TableCell>{usuario.nome}</TableCell>
+                <TableCell>{usuario.email}</TableCell>
+                <TableCell>{usuario.cpf || usuario.cnpj}</TableCell>
+                <TableCell>{usuario.tipoUsuario}</TableCell>
+                <TableCell align="center">
+                  <Box display="flex" gap={1} justifyContent="center">
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => handleEditar(usuario)}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDeletar(usuario)}
+                    >
+                      Deletar
+                    </Button>
+                  </Box>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Container>
     </>
   );
 };
