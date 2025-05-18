@@ -48,8 +48,6 @@ const CadastroUsuario = () => {
       senha: form.senha,
     };
 
-    console.log("Dados de cadastro:", dadosUsuario);
-
     let dadosAluno: any;
     let dadosEmpresa: any;
 

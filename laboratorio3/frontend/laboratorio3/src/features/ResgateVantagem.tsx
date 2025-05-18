@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import {
+  Alert,
   Button,
   Card,
   CardContent,
@@ -8,6 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Snackbar,
   Typography,
 } from "@mui/material";
 import axios from "axios";
@@ -38,6 +40,7 @@ const ResgateVantagem: React.FC = () => {
   const [vantagens, setVantagens] = useState<Vantagem[]>([]);
   const [mensagem, setMensagem] = useState<string>("");
   const [modalAberto, setModalAberto] = useState<boolean>(false);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const handleSelecionar = (vantagem: Vantagem) => {
     setVantagemSelecionada(vantagem);
@@ -89,7 +92,6 @@ const ResgateVantagem: React.FC = () => {
   useEffect(() => {
     if (alunoAtual?.saldo_moedas !== undefined) {
       setSaldo(alunoAtual.saldo_moedas);
-      console.log(alunoAtual.cpf);
     }
   }, [alunoAtual]);
 
@@ -107,6 +109,7 @@ const ResgateVantagem: React.FC = () => {
             `http://localhost:3001/aluno/resgatar-vantagem/${cpf}`,
             dados
           );
+          setAlertOpen(true);
         } catch (error) {
           console.error("Erro ao resgatar vantagem:", error);
         }
@@ -190,6 +193,20 @@ const ResgateVantagem: React.FC = () => {
           </Typography>
         )}
       </div>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={4000}
+        onClose={() => setAlertOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setAlertOpen(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Resgate concluído com sucesso! Confira seu novo saldo.
+        </Alert>
+      </Snackbar>
     </>
   );
 };

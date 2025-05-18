@@ -8,14 +8,12 @@ import ResgateVantagem from './features/ResgateVantagem';
 import ExtratoAluno from './features/ExtratoAluno';
 import ConsultaUsuario from './features/ConsultaUsuario';
 import EdicaoUsuario from './features/EdicaoUsuario';
-import ExclusaoUsuario from './features/ExclusaoUsuario';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <>{children}</> : <Navigate to="/" />;
 };
-import CadastroUsuario from './features/CadastroUsuario';
 
 const App: React.FC = () => {
   return (
@@ -58,12 +56,6 @@ const App: React.FC = () => {
           <Route path="/usuario/edicao/:id" element={
             <ProtectedRoute>
               <EdicaoUsuario />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/usuario/exclusao/:id" element={
-            <ProtectedRoute>
-              <ExclusaoUsuario />
             </ProtectedRoute>
           } />
 
