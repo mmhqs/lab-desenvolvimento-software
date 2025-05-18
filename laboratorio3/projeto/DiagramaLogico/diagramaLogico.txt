@@ -15,7 +15,7 @@ entity USUARIO {
 entity ALUNO {
   * usuario_id: int <<PK>> <<FK>>
   --
-  * cpf: varchar(14) <<unique>>
+  * cpf: varchar(14) <<PK>> <<unique>>
   * rg: varchar(12)
   * endereco: varchar(200)
   * saldo_moedas: int

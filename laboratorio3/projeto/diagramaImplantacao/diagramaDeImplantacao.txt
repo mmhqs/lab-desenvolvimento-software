@@ -10,6 +10,7 @@ node ServidorAplicacao {
 [Gerenciamento de Usuário]
 [Gerenciamento de Vantagens das Empresas]
 [Gerenciamento de Transações]
+[Gerenciamento de Instituições]
 }
 
 

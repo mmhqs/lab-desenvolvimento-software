@@ -28,7 +28,6 @@ class Professor extends Usuario {
 
 class EmpresaParceira extends Usuario {
 - cnpj: String
-- vantagens: List<Vantagem>
 + cadastrarVantagem(vantagem: Vantagem): void
 }
 
@@ -51,7 +50,7 @@ class Vantagem {
 - descricao: String
 - foto: String
 - custoMoedas: int
-
+- empresaParceira: EmpresaParceira
 }
 
 class Transacao {

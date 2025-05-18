@@ -7,7 +7,8 @@ package "Sistema de Mérito" {
     component "Backend" as backend {
         [Gerenciamento de Usuário]
         [Gerenciamento de Vantagens das Empresas]
-        [Gerenciamento de Transações]
+        [Gerenciamento de Transacoes]
+        [Gerenciamento de Instituicoes]
     }
 
     component "Banco de Dados" as bd {
