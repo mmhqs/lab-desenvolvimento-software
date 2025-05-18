@@ -1,37 +1,45 @@
 import {
+  Alert,
   Box,
   Button,
-  MenuItem,
   Paper,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
 import Header from "../components/Header";
 import { useState } from "react";
+import axios from "axios";
 
 const CadastroVantagem = () => {
-  const empresasParceiras = [
-    { id: "empresa1", nome: "Empresa Alpha" },
-    { id: "empresa2", nome: "Empresa Beta" },
-    { id: "empresa3", nome: "Empresa Gama" },
-  ];
-
-  const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [custo, setCusto] = useState<number | "">("");
-  const [empresa, setEmpresa] = useState("");
+  const [foto, setFoto] = useState("");
+  const [cnpj, setCnpj] = useState("");
+  const [alertOpen, setAlertOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const dados = {
-      nome,
       descricao,
-      custo,
-      empresa,
+      custo_moedas: custo,
+      foto,
     };
 
-    console.log("Vantagem cadastrada:", dados);
-    // Aqui você pode integrar com seu backend
+    try {
+      const response = await axios.post(
+        `http://localhost:3001/empresa/vantagens/${cnpj}`,
+        dados
+      );
+      setAlertOpen(true); // Mostra o alerta
+      // Limpa os campos do formulário
+      setDescricao("");
+      setCusto("");
+      setFoto("");
+      setCnpj("");
+    } catch (error) {
+      console.error("Erro ao cadastrar vantagem:", error);
+    }
   };
 
   return (
@@ -49,13 +57,6 @@ const CadastroVantagem = () => {
             Cadastrar Vantagem
           </Typography>
           <form onSubmit={handleSubmit}>
-            <TextField
-              label="Nome"
-              fullWidth
-              margin="normal"
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
             <TextField
               label="Descrição"
               fullWidth
@@ -78,12 +79,43 @@ const CadastroVantagem = () => {
                 }
               }}
             />
+            <TextField
+              label="Link da foto"
+              fullWidth
+              margin="normal"
+              minRows={3}
+              value={foto}
+              onChange={(e) => setFoto(e.target.value)}
+            />
+            <TextField
+              label="CNPJ da empresa"
+              fullWidth
+              margin="normal"
+              minRows={3}
+              value={cnpj}
+              onChange={(e) => setCnpj(e.target.value)}
+            />
+
             <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
               Cadastrar
             </Button>
           </form>
         </Paper>
       </Box>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={4000}
+        onClose={() => setAlertOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setAlertOpen(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Vantagem cadastrada com sucesso!
+        </Alert>
+      </Snackbar>
     </>
   );
 };
