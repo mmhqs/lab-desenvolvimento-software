@@ -20,6 +20,35 @@ const getByUsuarioId = async (usuario_id) => {
     return rows[0];
 };
 
+const getTransacoes = async (cpf) => {
+    const queryRecebidas = `
+        SELECT 
+            t.id,
+            t.data,
+            t.quantidade_moedas as quantidadeMoedas,
+            t.mensagem,
+            t.remetente_id as remetente,
+            t.destinatario_id as destinatario
+        FROM transacao t
+        WHERE t.destinatario_id = ?
+        UNION ALL
+        -- Busca transações onde o aluno é o remetente (enviou moedas)
+        SELECT 
+            t.id,
+            t.data,
+            t.quantidade_moedas as quantidadeMoedas,
+            t.mensagem,
+            t.remetente_id as remetente,
+            t.destinatario_id as destinatario
+        FROM transacao t
+        WHERE t.remetente_id = ?
+        ORDER BY data DESC
+    `;
+    
+    const [rows] = await conn.query(queryRecebidas, [cpf, cpf]);
+    return rows;
+};
+
 const cpfExists = async (cpf) => {
     const query = `SELECT 1 FROM ${table} WHERE cpf = ? LIMIT 1`;
     const [rows] = await conn.query(query, [cpf]);
@@ -160,5 +189,6 @@ module.exports = {
     adicionarMoedas,
     removerMoedas,
     resgatarVantagem,
-    getVantagensResgatadas
+    getVantagensResgatadas,
+    getTransacoes
 };

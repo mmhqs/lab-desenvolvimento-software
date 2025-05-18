@@ -11,6 +11,14 @@ router.get('/:cpf', (req, res) => {
     alunoController.getByCpf(req, res);
 });
 
+router.get('/:cpf/saldo', (req, res) => {
+    alunoController.getSaldo(req, res);
+});
+
+router.get('/:cpf/transacoes', (req, res) => {
+    alunoController.getTransacoes(req, res);
+});
+
 router.get('/usuario/:usuario_id', (req, res) => {
     alunoController.getByUsuarioId(req, res);
 });

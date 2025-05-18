@@ -1,92 +1,136 @@
 // src/pages/HistoricoTransacoes.tsx
-import React from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Container,
-  Box,
-  Divider,
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
+import { 
+    Container, 
+    Typography, 
+    Paper, 
+    Table, 
+    TableBody, 
+    TableCell, 
+    TableContainer, 
+    TableHead, 
+    TableRow,
+    Box,
+    Button,
+    Alert
 } from '@mui/material';
+import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import Header from '../components/Header';
 
-type Transacao = {
-  id: number;
-  data: string; // ou Date
-  quantidadeMoedas: number;
-  mensagem: string;
-  remetente: number;
-  destinatario: number;
-};
+interface Transacao {
+    id: number;
+    data: string;
+    quantidadeMoedas: number;
+    mensagem: string;
+    remetente: string;
+    destinatario: string;
+}
 
-// Simulando o ID do aluno logado
-const alunoId = 1;
+const ExtratoAluno = () => {
+    const navigate = useNavigate();
+    const { perfil } = useAuth();
+    const [saldo, setSaldo] = useState(0);
+    const [transacoes, setTransacoes] = useState<Transacao[]>([]);
+    const [erro, setErro] = useState('');
 
-// Mock de transações
-const transacoesMock: Transacao[] = [
-  {
-    id: 1,
-    data: '2025-05-01T10:00:00Z',
-    quantidadeMoedas: 50,
-    mensagem: 'Recompensa por atividade',
-    remetente: 2,
-    destinatario: 1,
-  },
-  {
-    id: 2,
-    data: '2025-05-03T14:30:00Z',
-    quantidadeMoedas: 20,
-    mensagem: 'Compra de adesivo',
-    remetente: 1,
-    destinatario: 3,
-  },
-];
+    useEffect(() => {
+        const carregarDados = async () => {
+            try {
+                const responseSaldo = await axios.get(`http://localhost:3001/aluno/${perfil.cpf}/saldo`);
+                setSaldo(responseSaldo.data.saldo_moedas);
 
-const ExtratoAluno: React.FC = () => {
-  return (
-    <>
-    <Header />
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Histórico de Transações
-      </Typography>
+                const responseTransacoes = await axios.get(`http://localhost:3001/aluno/${perfil.cpf}/transacoes`);
+                setTransacoes(responseTransacoes.data);
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            }
+        };
 
-      {transacoesMock.map((transacao) => {
-        const isRecebida = transacao.destinatario === alunoId;
-        const cor = isRecebida ? 'green' : 'red';
-        const sinal = isRecebida ? '+' : '-';
+        if (perfil?.cpf) {
+            carregarDados();
+        }
+    }, [perfil]);
 
-        return (
-          <Card key={transacao.id} variant="outlined" sx={{ mb: 2 }}>
-            <CardContent>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" sx={{ color: cor }}>
-                  {sinal}
-                  {transacao.quantidadeMoedas} moedas
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {new Date(transacao.data).toLocaleString('pt-BR')}
-                </Typography>
-              </Box>
+    const formatarData = (dataString: string) => {
+        const data = new Date(dataString);
+        return data.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
 
-              <Typography variant="body1" sx={{ mt: 1 }}>
-                {transacao.mensagem}
-              </Typography>
+    return (
+        <>
+            <Header />
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                    <Button
+                        startIcon={<ArrowBackIcon />}
+                        onClick={() => navigate('/home')}
+                        sx={{ mr: 2 }}
+                    >
+                        Voltar
+                    </Button>
+                    <Typography variant="h4" component="h1">
+                        Extrato de Moedas
+                    </Typography>
+                </Box>
 
-              <Divider sx={{ my: 1 }} />
+                {erro && (
+                    <Alert severity="error" sx={{ mb: 3 }}>
+                        {erro}
+                    </Alert>
+                )}
 
-              <Typography variant="caption" color="text.secondary">
-                {isRecebida
-                  ? `De: Usuário ${transacao.remetente}`
-                  : `Para: Usuário ${transacao.destinatario}`}
-              </Typography>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </Container>
-    </>
-  );
+                <Paper sx={{ p: 3, mb: 4 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Saldo Atual: {saldo} moedas
+                    </Typography>
+                </Paper>
+
+                <Paper sx={{ p: 3 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Histórico de Transações
+                    </Typography>
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Data</TableCell>
+                                    <TableCell>Descrição</TableCell>
+                                    <TableCell align="right">Quantidade</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {transacoes.map((transacao) => (
+                                    <TableRow key={transacao.id}>
+                                        <TableCell>{formatarData(transacao.data)}</TableCell>
+                                        <TableCell>{transacao.mensagem}</TableCell>
+                                        <TableCell 
+                                            align="right"
+                                            sx={{ 
+                                                color: transacao.destinatario === perfil.cpf ? 'success.main' : 'error.main',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {transacao.destinatario === perfil.cpf ? '+' : '-'}
+                                            {transacao.quantidadeMoedas}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper>
+            </Container>
+        </>
+    );
 };
 
 export default ExtratoAluno;
