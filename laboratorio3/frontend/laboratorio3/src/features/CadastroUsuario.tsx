@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import HeaderDeslogado from "../components/HeaderDeslogado";
 
 interface UsuarioResponse {
   id: 7;
@@ -120,6 +121,7 @@ const CadastroUsuario = () => {
 
   return (
     <>
+      <HeaderDeslogado />
       <Box
         display="flex"
         justifyContent="center"
