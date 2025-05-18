@@ -4,7 +4,7 @@ ALUNO: usuario_id (FK), cpf (PK), rg, endereco, saldo_moedas, instituicao_id (FK
 
 PROFESSOR: usuario_id (FK), cpf (PK), departamento, saldo_moedas
 
-EMPRESA_PARCERA: usuario_id (FK), cnpj (PK)
+EMPRESA_PARCEIRA: usuario_id (FK), cnpj (PK)
 
 CURSO: id (PK), nome
 
