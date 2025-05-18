@@ -14,6 +14,13 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
+interface UsuarioResponse {
+  id: 7;
+  nome: "Gisleine";
+  email: "gisleine@email.com";
+  senha: "12345";
+}
+
 const CadastroUsuario = () => {
   const [tipoUsuario, setTipoUsuario] = useState("aluno");
   const [alertOpen, setAlertOpen] = useState(false);
@@ -40,48 +47,71 @@ const CadastroUsuario = () => {
       senha: form.senha,
     };
 
-    let dadosAluno: any = {
-      cpf: form.cpf,
-      /* usuario_id: */
-      rg: form.rg,
-      endereco: form.endereco,
-      saldo_moedas: 0,
-    };
-
-    let dadosEmpresa: any = {
-      /* usuario_id: */
-      cnpj: form.cnpj,
-    };
-
     console.log("Dados de cadastro:", dadosUsuario);
 
+    let dadosAluno: any;
+    let dadosEmpresa: any;
+
     try {
-      const response = await axios.post(
+      const responseUsuario = await axios.post<UsuarioResponse>(
         `http://localhost:3001/usuario`,
         dadosUsuario
       );
-      setAlertOpen(true); // Mostra o alerta
+      const usuarioId = responseUsuario.data.id;
+
+      dadosAluno = {
+        cpf: form.cpf,
+        usuario_id: usuarioId,
+        rg: form.rg,
+        endereco: form.endereco,
+        saldo_moedas: 0,
+      };
+
+      dadosEmpresa = {
+        usuario_id: usuarioId,
+        cnpj: form.cnpj,
+      };
     } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
     }
 
     if (tipoUsuario == "aluno") {
       try {
-        const response = await axios.post(
+        const responseAluno = await axios.post(
           `http://localhost:3001/aluno`,
           dadosAluno
         );
         setAlertOpen(true); // Mostra o alerta
+
+        setForm({
+          nome: "",
+          email: "",
+          senha: "",
+          cpf: "",
+          rg: "",
+          endereco: "",
+          cnpj: "",
+        });
       } catch (error) {
         console.error("Erro ao cadastrar aluno:", error);
       }
     } else {
       try {
-        const response = await axios.post(
+        const responseEmpresa = await axios.post(
           `http://localhost:3001/empresa`,
           dadosEmpresa
         );
         setAlertOpen(true); // Mostra o alerta
+
+        setForm({
+          nome: "",
+          email: "",
+          senha: "",
+          cpf: "",
+          rg: "",
+          endereco: "",
+          cnpj: "",
+        });
       } catch (error) {
         console.error("Erro ao cadastrar empresa:", error);
       }
