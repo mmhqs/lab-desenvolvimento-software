@@ -11,6 +11,10 @@ router.get('/:cnpj', (req, res) => {
     empresaParceiraController.getByCnpj(req, res);
 });
 
+router.get('/vantagens/todas', (req, res) => {
+    empresaParceiraController.getAllVantagens(req, res);
+});
+
 router.get('/usuario/:usuario_id', (req, res) => {
     empresaParceiraController.getByUsuarioId(req, res);
 });

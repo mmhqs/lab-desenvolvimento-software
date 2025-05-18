@@ -33,7 +33,7 @@ const post = async (nome, email, senha) => {
         VALUES (?, ?, ?)
     `;
     const [result] = await conn.query(query, [nome, email, senha]);
-    return result;
+    return result.insertId;
 };
 
 const put = async (id, nome, email, senha) => {
