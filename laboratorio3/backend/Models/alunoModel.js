@@ -149,7 +149,7 @@ const resgatarVantagem = async (cpfAluno, idVantagem) => {
         );
         
         const [result] = await conn.query(
-            'INSERT INTO aluno_vantagem (id_aluno, id_vantagem) VALUES (?, ?)',
+            'INSERT INTO aluno_vantagem (aluno_id, vantagem_id) VALUES (?, ?)',
             [cpfAluno, idVantagem]
         );
         

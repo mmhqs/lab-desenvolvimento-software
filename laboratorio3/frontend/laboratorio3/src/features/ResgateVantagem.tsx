@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import {
   Button,
@@ -10,43 +10,32 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
 
 interface Vantagem {
   id: number;
-  titulo: string;
   descricao: string;
-  imagem: string;
-  custo: number;
+  foto: string;
+  custo_moedas: number;
 }
 
-const vantagensDisponiveis: Vantagem[] = [
-  {
-    id: 1,
-    titulo: "Desconto em Restaurante",
-    descricao: "20% de desconto em refeições no Restaurante X",
-    imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSg2oGaj2aelLlGLu092jD8WCkGURuQ4cv9FA&s",
-    custo: 50,
-  },
-  {
-    id: 2,
-    titulo: "Material Escolar",
-    descricao: "Kit completo de material escolar para seu filho",
-    imagem: "https://static.vecteezy.com/system/resources/previews/025/221/322/non_2x/cartoon-student-cute-school-ai-generate-png.png",
-    custo: 100,
-  },
-  {
-    id: 3,
-    titulo: "Cinema grátis",
-    descricao: "Ingresso para uma sessão de cinema",
-    imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEu3t22Es3Bt1MmPhb39FEKRbNkU2bJJTRhw&s",
-    custo: 30,
-  },
-];
+interface Aluno {
+  id: number;
+  usuario_id: number;
+  cpf: string;
+  rg: string;
+  endereco: string;
+  saldo_moedas: number;
+}
 
 const ResgateVantagem: React.FC = () => {
-  const [saldo, setSaldo] = useState<number>(120);
+  const { user } = useAuth();
+  const [alunoAtual, setAlunoAtual] = useState<Aluno | null>(null);
+  const [saldo, setSaldo] = useState<number>(0);
   const [vantagemSelecionada, setVantagemSelecionada] =
     useState<Vantagem | null>(null);
+  const [vantagens, setVantagens] = useState<Vantagem[]>([]);
   const [mensagem, setMensagem] = useState<string>("");
   const [modalAberto, setModalAberto] = useState<boolean>(false);
 
@@ -55,11 +44,72 @@ const ResgateVantagem: React.FC = () => {
     setModalAberto(true);
   };
 
-  const handleResgatar = () => {
+  /* Buscando as vantagens existentes */
+  useEffect(() => {
+    const buscarVantagens = async () => {
+      try {
+        const response = await axios.get<Vantagem[]>(
+          "http://localhost:3001/empresa/vantagens/todas"
+        );
+        setVantagens(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar vantagens:", error);
+      }
+    };
+
+    buscarVantagens();
+  }, []);
+
+  /* Buscando o aluno logado */
+  useEffect(() => {
+    const buscarAlunos = async () => {
+      try {
+        const response = await axios.get<Aluno[]>(
+          "http://localhost:3001/aluno"
+        );
+
+        const alunoEncontrado = response.data.find(
+          (aluno) => aluno.usuario_id === user?.id
+        );
+
+        if (alunoEncontrado) {
+          setAlunoAtual(alunoEncontrado);
+        } else {
+          console.warn("Nenhum aluno encontrado com o usuário_id fornecido.");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar alunos:", error);
+      }
+    };
+
+    buscarAlunos();
+  }, []);
+
+  /* Carregando saldo do aluno */
+  useEffect(() => {
+    if (alunoAtual?.saldo_moedas !== undefined) {
+      setSaldo(alunoAtual.saldo_moedas);
+      console.log(alunoAtual.cpf);
+    }
+  }, [alunoAtual]);
+
+  const cpf = alunoAtual?.cpf;
+
+  const handleResgatar = async (idVantagem: number) => {
     if (vantagemSelecionada) {
-      if (saldo >= vantagemSelecionada.custo) {
-        setSaldo(saldo - vantagemSelecionada.custo);
-        setMensagem("Resgate realizado com sucesso!");
+      if (saldo >= vantagemSelecionada.custo_moedas) {
+        setSaldo(saldo - vantagemSelecionada.custo_moedas);
+
+        let dados = { id_vantagem: idVantagem };
+
+        try {
+          const response = await axios.post(
+            `http://localhost:3001/aluno/resgatar-vantagem/${cpf}`,
+            dados
+          );
+        } catch (error) {
+          console.error("Erro ao resgatar vantagem:", error);
+        }
       } else {
         setMensagem("Saldo insuficiente para resgatar esta vantagem.");
       }
@@ -84,25 +134,26 @@ const ResgateVantagem: React.FC = () => {
             gap: "16px",
           }}
         >
-          {vantagensDisponiveis.map((vantagem) => (
+          {vantagens.map((vantagem) => (
             <Card
               key={vantagem.id}
               onClick={() => handleSelecionar(vantagem)}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", width: "20%" }}
             >
               <CardMedia
                 component="img"
                 height="140"
-                image={vantagem.imagem}
-                alt={vantagem.titulo}
+                image={vantagem.foto}
+                alt={vantagem.descricao}
               />
               <CardContent>
-                <Typography variant="h6">{vantagem.titulo}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {vantagem.descricao}
-                </Typography>
-                <Typography variant="subtitle1" fontWeight="bold">
-                  Custo: {vantagem.custo} pontos
+                <Typography variant="h6">{vantagem.descricao}</Typography>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  color="textSecondary"
+                >
+                  Custo: {vantagem.custo_moedas} pontos
                 </Typography>
               </CardContent>
             </Card>
@@ -115,18 +166,15 @@ const ResgateVantagem: React.FC = () => {
             {vantagemSelecionada && (
               <div style={{ marginTop: "16px" }}>
                 <Typography variant="h6">
-                  {vantagemSelecionada.titulo}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
                   {vantagemSelecionada.descricao}
                 </Typography>
                 <Typography variant="subtitle1" fontWeight="bold">
-                  Custo: {vantagemSelecionada.custo} pontos
+                  Custo: {vantagemSelecionada.custo_moedas} pontos
                 </Typography>
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleResgatar}
+                  onClick={() => handleResgatar(vantagemSelecionada.id)}
                   style={{ marginTop: "16px" }}
                 >
                   Confirmar Resgate
