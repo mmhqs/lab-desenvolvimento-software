@@ -1,18 +1,12 @@
 import { Box, Button, Container, Typography } from "@mui/material";
-import {
-  CheckCircle,
-  Gift,
-  Clipboard,
-  User,
-  Edit,
-  UserX,
-  UserCheck,
-} from "react-feather";
+import { CheckCircle, Gift, Clipboard, UserCheck } from "react-feather";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Homepage: React.FC = () => {
   const navigate = useNavigate();
+  const { perfil } = useAuth();
 
   return (
     <>
@@ -30,44 +24,56 @@ const Homepage: React.FC = () => {
         >
           <Typography variant="h5">Gerenciamento de vantagens</Typography>
           <Box display="flex" gap={2} marginBottom={5}>
-            {/* Cadastrar vantagem */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/vantagem")}
-              style={{ width: "10rem" }}
-            >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                Cadastrar vantagem
-                <Gift />
-              </Box>
-            </Button>
+            {/* Cadastrar vantagem (empresa) */}
+            {perfil.cnpj && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate("/vantagem")}
+                style={{ width: "10rem" }}
+              >
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  Cadastrar vantagem
+                  <Gift />
+                </Box>
+              </Button>
+            )}
+            ;{/* Resgatar vantagem e ver extrato (aluno) */}
+            {perfil.cpf && (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate("/vantagem/resgate")}
+                  style={{ width: "10rem" }}
+                >
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                  >
+                    Resgatar vantagem
+                    <CheckCircle />
+                  </Box>
+                </Button>
 
-            {/* Resgatar vantagem */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/vantagem/resgate")}
-              style={{ width: "10rem" }}
-            >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                Resgatar vantagem
-                <CheckCircle />
-              </Box>
-            </Button>
-
-            {/* Ver extrato */}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate("/extrato")}
-              style={{ width: "10rem" }}
-            >
-              <Box display="flex" flexDirection="column" alignItems="center">
-                Ver extrato
-                <Clipboard />
-              </Box>
-            </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate("/extrato")}
+                  style={{ width: "10rem" }}
+                >
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                  >
+                    Ver extrato
+                    <Clipboard />
+                  </Box>
+                </Button>
+              </>
+            )}
           </Box>
 
           <Typography variant="h5">Gerenciamento de usuário</Typography>
@@ -84,7 +90,6 @@ const Homepage: React.FC = () => {
                 <UserCheck />
               </Box>
             </Button>
-            
           </Box>
         </Box>
       </Container>

@@ -30,7 +30,6 @@ interface Transacao {
 }
 
 const ExtratoAluno = () => {
-    const navigate = useNavigate();
     const { perfil } = useAuth();
     const [saldo, setSaldo] = useState(0);
     const [transacoes, setTransacoes] = useState<Transacao[]>([]);

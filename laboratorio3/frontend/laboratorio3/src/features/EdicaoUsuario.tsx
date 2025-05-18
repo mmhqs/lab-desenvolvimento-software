@@ -34,9 +34,7 @@ const EdicaoUsuario: React.FC = () => {
             if (!id) return;
             
             try {
-                console.log('Carregando usuário com ID:', id);
                 const resposta = await axios.get(`http://localhost:3001/usuario/${id}`);
-                console.log('Dados recebidos:', resposta.data);
                 setUsuario(resposta.data);
             } catch (erro) {
                 console.error('Erro ao carregar usuário:', erro);
