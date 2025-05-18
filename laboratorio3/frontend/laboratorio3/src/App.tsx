@@ -15,6 +15,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? <>{children}</> : <Navigate to="/" />;
 };
+import CadastroUsuario from './features/CadastroUsuario';
 
 const App: React.FC = () => {
   return (
