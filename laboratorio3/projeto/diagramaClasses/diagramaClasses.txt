@@ -63,6 +63,7 @@ class Transacao {
 }
 
 class NotificacaoEmail {
+- id: int
 - destinatarios: List<Usuario>
 - mensagem: String
 + enviarTrocaMoedas(quantidadeMoedas: int): void
@@ -70,6 +71,7 @@ class NotificacaoEmail {
 }
 
 class CodigoTroca {
+- id: int
 - valor: String
 + gerar(): String
 }
