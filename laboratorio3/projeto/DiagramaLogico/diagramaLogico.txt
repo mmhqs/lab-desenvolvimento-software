@@ -31,10 +31,9 @@ entity PROFESSOR {
 }
 
 entity EMPRESA_PARCEIRA {
-  * usuario_id: int <<PK>> <<FK>>
+  * usuario_id: int <<FK>>
   --
-  * cnpj: varchar(18) <<unique>>
-  * vantagem_id: int <<FK>>
+  * cnpj: varchar(18) <<PK>> <<unique>>
 }
 
 entity INSTITUICAO_ENSINO {
@@ -42,6 +41,13 @@ entity INSTITUICAO_ENSINO {
   --
   * nome: varchar(100)
   * endereco: varchar(200)
+}
+
+entity ALUNO_VANTAGEM {
+  * id: int <<PK>>
+  --
+  * aluno_id: int <<FK>>
+  * vantagem_id: int <<FK>>
 }
 
 entity CURSO {
@@ -67,6 +73,7 @@ entity VANTAGEM {
   * descricao: varchar(255)
   * foto: varchar(255)
   * custo_moedas: int
+  * empresa_cnpj: varchar(18) <<FK>>
 }
 
 entity TRANSACAO {
@@ -96,6 +103,8 @@ entity CODIGO_TROCA {
 ' Relacionamentos
 
 ALUNO }--|| USUARIO
+ALUNO_VANTAGEM }--|| ALUNO
+ALUNO_VANTAGEM }--|| VANTAGEM
 PROFESSOR }--|| USUARIO
 EMPRESA_PARCEIRA }--|| USUARIO
 
