@@ -16,10 +16,35 @@ import axios from "axios";
 import HeaderDeslogado from "../components/HeaderDeslogado";
 
 interface UsuarioResponse {
-  id: 7;
-  nome: "Gisleine";
-  email: "gisleine@email.com";
-  senha: "12345";
+  id: number;
+  nome: string;
+  email: string;
+  senha: string;
+}
+
+interface DadosUsuario {
+  nome: string;
+  email: string;
+  senha: string;
+}
+
+interface DadosAluno {
+  cpf: string;
+  usuario_id: number;
+  rg: string;
+  endereco: string;
+  saldo_moedas: number;
+}
+
+interface DadosEmpresa {
+  usuario_id: number;
+  cnpj: string;
+}
+
+interface DadosProfessor {
+  usuario_id: number;
+  cpf: string;
+  departamento: string;
 }
 
 const CadastroUsuario = () => {
@@ -33,6 +58,7 @@ const CadastroUsuario = () => {
     rg: "",
     endereco: "",
     cnpj: "",
+    departamento: "",
   });
 
   const handleChange = (field: string, value: string) => {
@@ -42,14 +68,11 @@ const CadastroUsuario = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    let dadosUsuario: any = {
+    const dadosUsuario: DadosUsuario = {
       nome: form.nome,
       email: form.email,
       senha: form.senha,
     };
-
-    let dadosAluno: any;
-    let dadosEmpresa: any;
 
     try {
       const responseUsuario = await axios.post<UsuarioResponse>(
@@ -58,62 +81,46 @@ const CadastroUsuario = () => {
       );
       const usuarioId = responseUsuario.data.id;
 
-      dadosAluno = {
-        cpf: form.cpf,
-        usuario_id: usuarioId,
-        rg: form.rg,
-        endereco: form.endereco,
-        saldo_moedas: 0,
-      };
+      if (tipoUsuario === "aluno") {
+        const dadosAluno: DadosAluno = {
+          cpf: form.cpf,
+          usuario_id: usuarioId,
+          rg: form.rg,
+          endereco: form.endereco,
+          saldo_moedas: 0,
+        };
 
-      dadosEmpresa = {
-        usuario_id: usuarioId,
-        cnpj: form.cnpj,
-      };
+        await axios.post(`http://localhost:3001/aluno`, dadosAluno);
+      } else if (tipoUsuario === "empresa") {
+        const dadosEmpresa: DadosEmpresa = {
+          usuario_id: usuarioId,
+          cnpj: form.cnpj,
+        };
+
+        await axios.post(`http://localhost:3001/empresa`, dadosEmpresa);
+      } else if (tipoUsuario === "professor") {
+        const dadosProfessor: DadosProfessor = {
+          usuario_id: usuarioId,
+          cpf: form.cpf,
+          departamento: form.departamento,
+        };
+
+        await axios.post(`http://localhost:3001/professor`, dadosProfessor);
+      }
+
+      setAlertOpen(true);
+      setForm({
+        nome: "",
+        email: "",
+        senha: "",
+        cpf: "",
+        rg: "",
+        endereco: "",
+        cnpj: "",
+        departamento: "",
+      });
     } catch (error) {
-      console.error("Erro ao cadastrar usuário:", error);
-    }
-
-    if (tipoUsuario == "aluno") {
-      try {
-        const responseAluno = await axios.post(
-          `http://localhost:3001/aluno`,
-          dadosAluno
-        );
-        setAlertOpen(true); // Mostra o alerta
-
-        setForm({
-          nome: "",
-          email: "",
-          senha: "",
-          cpf: "",
-          rg: "",
-          endereco: "",
-          cnpj: "",
-        });
-      } catch (error) {
-        console.error("Erro ao cadastrar aluno:", error);
-      }
-    } else {
-      try {
-        const responseEmpresa = await axios.post(
-          `http://localhost:3001/empresa`,
-          dadosEmpresa
-        );
-        setAlertOpen(true); // Mostra o alerta
-
-        setForm({
-          nome: "",
-          email: "",
-          senha: "",
-          cpf: "",
-          rg: "",
-          endereco: "",
-          cnpj: "",
-        });
-      } catch (error) {
-        console.error("Erro ao cadastrar empresa:", error);
-      }
+      console.error("Erro ao cadastrar:", error);
     }
   };
 
@@ -142,6 +149,7 @@ const CadastroUsuario = () => {
             >
               <MenuItem value="aluno">Aluno</MenuItem>
               <MenuItem value="empresa">Empresa</MenuItem>
+              <MenuItem value="professor">Professor</MenuItem>
             </Select>
           </FormControl>
 
@@ -204,6 +212,25 @@ const CadastroUsuario = () => {
                 value={form.cnpj}
                 onChange={(e) => handleChange("cnpj", e.target.value)}
               />
+            )}
+
+            {tipoUsuario === "professor" && (
+              <>
+                <TextField
+                  label="CPF"
+                  fullWidth
+                  margin="normal"
+                  value={form.cpf}
+                  onChange={(e) => handleChange("cpf", e.target.value)}
+                />
+                <TextField
+                  label="Departamento"
+                  fullWidth
+                  margin="normal"
+                  value={form.departamento}
+                  onChange={(e) => handleChange("departamento", e.target.value)}
+                />
+              </>
             )}
 
             <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
