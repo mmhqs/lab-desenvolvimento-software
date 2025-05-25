@@ -39,4 +39,8 @@ router.delete('/vantagens/:vantagem_id', (req, res) => {
     empresaParceiraController.removeVantagem(req, res);
 });
 
+router.put('/vantagens/:vantagem_id', (req, res) => {
+    empresaParceiraController.updateVantagem(req, res);
+});
+
 module.exports = router;

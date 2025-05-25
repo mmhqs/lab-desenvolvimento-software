@@ -104,6 +104,33 @@ const getAllVantagens = (req, res) => {
         .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
 };
 
+const updateVantagem = (req, res) => {
+    const vantagem_id = req.params.vantagem_id;
+    const vantagemData = req.body;
+
+    if (!vantagemData) {
+        return res.status(400).json({ error: "Corpo da requisição faltando." });
+    }
+
+    if (vantagemData.custo_moedas === undefined || vantagemData.descricao === undefined) {
+        return res.status(400).json({ 
+            error: "Campos obrigatórios faltando.",
+            required: ["custo_moedas", "descricao"],
+            received: Object.keys(vantagemData)
+        });
+    }
+
+    empresaParceiraModel.updateVantagem(vantagem_id, vantagemData)
+        .then(success => {
+            if (success) return res.status(200).json("Vantagem atualizada com sucesso.");
+            return res.status(404).json("Vantagem não encontrada.");
+        })
+        .catch(err => res.status(500).json({ 
+            error: err.sqlMessage || err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        }));
+};
+
 module.exports = {
     getAll,
     getByCnpj,
@@ -113,5 +140,6 @@ module.exports = {
     del,
     addVantagem,
     removeVantagem,
-    getAllVantagens
+    getAllVantagens,
+    updateVantagem
 };
