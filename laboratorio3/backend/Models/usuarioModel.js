@@ -70,6 +70,15 @@ const getPerfilByUsuarioId = async (usuario_id) => {
     if (empresa.length > 0) {
         return { tipo: 'empresa', dados: empresa[0] };
     }
+
+    const [professor] = await conn.query(
+        'SELECT * FROM professor WHERE usuario_id = ?', 
+        [usuario_id]
+    );
+    
+    if (professor.length > 0) {
+        return { tipo: 'professor', dados: professor[0] };
+    }
     
     return null;
 };
