@@ -46,6 +46,9 @@ app.use('/usuario', usuario);
 const empresa = require('./Routes/empresaParceira');
 app.use('/empresa', empresa);
 
+const professor = require('./Routes/professor');
+app.use('/professor', professor);
+
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada" });
 });
