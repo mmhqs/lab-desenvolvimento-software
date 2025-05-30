@@ -17,6 +17,17 @@ const getById = (req, res) => {
         .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
 };
 
+const getPerfilByUsuarioId = (req, res) => {
+    const id = req.params.id;
+
+    usuarioModel.getPerfilByUsuarioId(id)
+        .then(data => {
+            if (data) return res.status(200).json(data);
+            return res.status(404).json("Usuário não encontrado.");
+        })
+        .catch(err => res.status(500).json({ error: err['sqlMessage'] }));
+};
+
 const getByEmail = (req, res) => {
     const email = req.params.email;
 
@@ -152,5 +163,6 @@ module.exports = {
     post,
     put,
     del,
-    login
+    login,
+    getPerfilByUsuarioId
 };
