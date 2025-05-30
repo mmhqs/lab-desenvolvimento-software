@@ -1,4 +1,5 @@
 const conn = require('./conexao_bd');
+const alunoModel = require('./alunoModel');
 
 const table = "professor";
 
@@ -86,80 +87,60 @@ const enviarMoedas = async (req, res) => {
 
     try {
         const [professor, aluno] = await Promise.all([
-            professorModel.getByCpf(professor_id),
-            alunoModel.getById(aluno_id)
+            getByUsuarioId(professor_id), // ✅ chamada direta da função local
+            alunoModel.getByUsuarioId(aluno_id)
         ]);
 
-        if (!professor) {
-            return res.status(404).json({ error: "Professor não encontrado." });
-        }
-        if (!aluno) {
-            return res.status(404).json({ error: "Aluno não encontrado." });
-        }
+        if (!professor) return res.status(404).json({ error: "Professor não encontrado." });
+        if (!aluno) return res.status(404).json({ error: "Aluno não encontrado." });
 
         if (professor.saldo_moedas < quantidade) {
-            return res.status(400).json({ 
-                error: "Saldo de moedas insuficiente para realizar a transferência." 
-            });
+            return res.status(400).json({ error: "Saldo de moedas insuficiente." });
         }
-
-        const professorUsuarioId = professor.usuario_id;
-        const alunoUsuarioId = aluno.usuario_id;
 
         const connection = await conn.getConnection();
         await connection.beginTransaction();
 
         try {
             await connection.query(
-                'UPDATE professor SET saldo_moedas = ? WHERE id = ?',
+                'UPDATE professor SET saldo_moedas = ? WHERE usuario_id = ?',
                 [professor.saldo_moedas - quantidade, professor_id]
             );
 
             await connection.query(
-                'UPDATE aluno SET saldo_moedas = ? WHERE id = ?',
+                'UPDATE aluno SET saldo_moedas = ? WHERE usuario_id = ?',
                 [aluno.saldo_moedas + quantidade, aluno_id]
             );
 
-            const [transacaoResult] = await connection.query(
-                `INSERT INTO transcacao 
-                (quantidade_moedas, mensagem, remetente_id, destinatario_id) 
-                VALUES (?, ?, ?, ?)`,
-                [quantidade, motivo || 'Transferência de moedas', professorUsuarioId, alunoUsuarioId]
+            const [result] = await connection.query(
+                `INSERT INTO transacao 
+                 (quantidade_moedas, mensagem, remetente_id, destinatario_id)
+                 VALUES (?, ?, ?, ?)`,
+                [quantidade, motivo || 'Transferência de moedas', professor_id, aluno_id]
             );
 
             await connection.commit();
+            connection.release();
 
-            const [professorAtualizado, alunoAtualizado, transacao] = await Promise.all([
-                professorModel.getById(professor_id),
-                alunoModel.getById(aluno_id),
-                transcacaoModel.getById(transacaoResult.insertId)
-            ]);
-
-            res.status(200).json({ 
+            return res.status(200).json({
                 message: "Moedas transferidas com sucesso.",
-                professor: {
-                    saldo_moedas: professorAtualizado.saldo_moedas
-                },
-                aluno: {
-                    saldo_moedas: alunoAtualizado.saldo_moedas
-                },
-                transacao: transacao
+                saldoProfessor: professor.saldo_moedas - quantidade,
+                saldoAluno: aluno.saldo_moedas + quantidade,
+                transacao_id: result.insertId
             });
 
         } catch (err) {
             await connection.rollback();
-            throw err;
-        } finally {
             connection.release();
+            throw err;
         }
 
     } catch (err) {
         console.error('Erro ao enviar moedas:', err);
-        res.status(500).json({ 
-            error: err['sqlMessage'] || err.message || 'Erro ao processar a transferência' 
-        });
+        return res.status(500).json({ error: err.message || 'Erro interno ao processar a transferência.' });
     }
 };
+
 
 module.exports = {
     getAll,
