@@ -40,11 +40,17 @@ const EnvioMoedas = () => {
   const [saldoAtual, setSaldoAtual] = useState(0);
 
   // Busca o saldo
+
   const buscarSaldoAtual = async () => {
-    const response = await axios.get(
-      `http://localhost:3001/professor/${perfil.cpf}`
-    );
-    setSaldoAtual(response.data);
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/professor/${perfil.cpf}`
+      );
+      console.log("Saldo atualizado:", response.data);
+      setSaldoAtual(response.data.saldo_moedas);
+    } catch (error) {
+      console.error("Erro ao buscar saldo:", error);
+    }
   };
 
   useEffect(() => {
@@ -155,6 +161,16 @@ const EnvioMoedas = () => {
           <Typography variant="h5" align="center" gutterBottom>
             Envio de moedas
           </Typography>
+
+          {/* Saldo de moedas */}
+          <Typography variant="h6" gutterBottom>
+            Saldo atual
+          </Typography>
+          <Paper sx={{ p: 3, mb: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              {saldoAtual} moedas
+            </Typography>
+          </Paper>
 
           <form onSubmit={enviarMoedas}>
             <TextField
