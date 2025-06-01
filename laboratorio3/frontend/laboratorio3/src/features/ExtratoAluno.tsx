@@ -76,9 +76,6 @@ const ExtratoAluno = () => {
             destinatario: usuariosPorId[transacao.destinatario_id],
           })
         );
-
-        console.log(transacoesComUsuarios);
-
         setTransacoes(transacoesComUsuarios);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);

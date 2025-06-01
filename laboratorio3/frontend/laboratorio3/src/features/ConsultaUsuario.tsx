@@ -130,9 +130,7 @@ const navigate = useNavigate();
   const handleDeletarEmpresa = async (cnpj: string, usuarioId: number) => {
     try {
       await axios.delete(`http://localhost:3001/empresa/${cnpj}`);
-      console.log(`Empresa com CNPJ ${cnpj} deletada com sucesso.`);
       await axios.delete(`http://localhost:3001/usuario/${usuarioId}`);
-      console.log(`Usuário com ID ${usuarioId} deletado com sucesso.`);
       await carregarTodosOsDados();
     } catch (error) {
       console.error("Erro ao deletar empresa:", error);
@@ -142,9 +140,7 @@ const navigate = useNavigate();
   const handleDeletarAluno = async (cpf: string, usuarioId: number) => {
     try {
       await axios.delete(`http://localhost:3001/empresa/${cpf}`);
-      console.log(`Empresa com CNPJ ${cpf} deletada com sucesso.`);
       await axios.delete(`http://localhost:3001/usuario/${usuarioId}`);
-      console.log(`Usuário com ID ${usuarioId} deletado com sucesso.`);
       await carregarTodosOsDados();
     } catch (error) {
       console.error("Erro ao deletar aluno:", error);
@@ -154,7 +150,6 @@ const navigate = useNavigate();
   const handleDeletarUsuario = async (usuarioId: number) => {
     try {
       await axios.delete(`http://localhost:3001/usuario/${usuarioId}`);
-      console.log(`Usuário com ID ${usuarioId} deletado com sucesso.`);
       await carregarTodosOsDados();
     } catch (error) {
       console.error("Erro ao deletar aluno:", error);
