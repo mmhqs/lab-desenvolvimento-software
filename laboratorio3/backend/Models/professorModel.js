@@ -16,7 +16,12 @@ const getByCpf = async (cpf) => {
 };
 
 const getByUsuarioId = async (usuario_id) => {
-    const query = `SELECT * FROM ${table} WHERE usuario_id = ?`;
+    const query = `
+        SELECT p.*, u.* 
+        FROM ${table} p
+        JOIN usuario u ON p.usuario_id = u.id
+        WHERE p.usuario_id = ?
+    `;
     const [rows] = await conn.query(query, [usuario_id]);
     return rows[0];
 };
