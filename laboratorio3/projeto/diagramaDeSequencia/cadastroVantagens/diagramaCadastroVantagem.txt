@@ -1,0 +1,77 @@
+@startuml
+title Diagrama de Sequência - Arquitetura Controller/Model/Routes
+
+actor "Empresa Parceira" as Empresa
+
+participant "empresaParceira" as Routes
+participant "empresaParceiraController" as Controller
+participant "empresaParceiraModel" as Model
+
+ref over Empresa: Realizar login
+
+' 1. Criar Vantagem
+Empresa -> Routes: 1: POST /empresa/vantagens:cnpj (body: vantagem)
+activate Routes
+Routes -> Controller: 1.1: addVantagem(req, res)
+activate Controller
+Controller -> Model: 1.2: addVantagem(empresa_cnpj, vantagemData)
+activate Model
+Model --> Controller: 1.3: id
+note right of Model
+  Query de criação:
+  INSERT INTO vantagem 
+    (id, custo_moedas, descricao, foto, empresa_cnpj)
+    VALUES (?, ?, ?, ?, ?)
+end note
+deactivate Model
+
+Controller --> Routes: 1.4: res.status(201).json("Vantagem adicionada com sucesso.")
+Routes --> Empresa
+deactivate Controller
+deactivate Routes
+
+Empresa -> Routes: 2: PUT /empresa/vantagens/:id (body: dados)
+activate Routes
+Routes -> Controller: 2.1: update(req, res)
+activate Controller
+Controller -> Model: 2.2: getById(id)
+activate Model
+Model --> Controller: 2.3: vantagemExistente
+deactivate Model
+
+Controller -> Model: 2.4: update(id, titulo, descricao)
+activate Model
+Model --> Controller: 2.5: sucesso
+deactivate Model
+
+note right of Model
+  Query de atualização:
+UPDATE vantagem 
+        SET custo_moedas = ?, descricao = ?, foto = ?
+        WHERE id = ?
+end note
+
+Controller --> Routes: 2.6: res.status(200).json("Vantagem atualizada com sucesso.")
+Controller --> Empresa
+deactivate Controller
+deactivate Routes
+
+' 3. Deletar Vantagem
+Empresa -> Routes: 3: DELETE /empresa/vantagens/:id
+activate Routes
+Routes -> Controller: 3.1: remove(req, res)
+activate Controller
+Controller -> Model: 3.2: remove(id)
+activate Model
+Model --> Controller: 3.3: sucesso
+note right of Model
+  Query de deleção:
+  DELETE FROM vantagem WHERE id = ?
+end note
+deactivate Model
+
+Controller --> Routes: 3.4: res.status(200).json("Vantagem removida com sucesso.")
+Routes --> Empresa
+deactivate Controller
+deactivate Routes
+@enduml

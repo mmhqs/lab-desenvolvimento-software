@@ -1,0 +1,24 @@
+@startuml
+title Diagrama de Sequência - Envio de moedas pelo professor
+actor Professor
+
+participant "professor" as Routes
+participant "professorController" as Controller
+participant "professorModel" as Model
+
+ref over Professor: Realizar login
+
+' 1. Listar todas as vantagens
+Professor -> Routes: 1: POST/professor/enviar-moedas
+activate Routes
+Routes -> Controller: 1.1: enviarMoedas(req, res)
+activate Controller
+Controller -> Model: 1.2: enviarMoedas(professor_id, aluno_id, quantidade, motivo)
+activate Model
+Model --> Controller: 1.3: message: "Moedas transferidas com sucesso."
+deactivate Model
+Controller --> Routes: 1.4: res.status(200).json(message, detalhes)
+Routes --> Professor: 1.5: res.status(200).json(message, detalhes)
+deactivate Controller
+deactivate Routes
+@enduml

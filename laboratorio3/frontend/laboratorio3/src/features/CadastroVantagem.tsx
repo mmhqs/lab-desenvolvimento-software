@@ -17,9 +17,18 @@ const CadastroVantagem = () => {
   const [foto, setFoto] = useState("");
   const [cnpj, setCnpj] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorAlert, setErrorAlert] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!descricao || !custo || !foto || !cnpj) {
+      setErrorMessage("Por favor, preencha todos os campos");
+      setErrorAlert(true);
+      return;
+    }
+
     const dados = {
       descricao,
       custo_moedas: custo,
@@ -60,6 +69,7 @@ const CadastroVantagem = () => {
             <TextField
               label="Descrição"
               fullWidth
+              required
               margin="normal"
               multiline
               minRows={3}
@@ -70,6 +80,7 @@ const CadastroVantagem = () => {
               label="Custo em moedas"
               type="number"
               fullWidth
+              required
               margin="normal"
               value={custo}
               onChange={(e) => {
@@ -82,6 +93,7 @@ const CadastroVantagem = () => {
             <TextField
               label="Link da foto"
               fullWidth
+              required
               margin="normal"
               minRows={3}
               value={foto}
@@ -90,6 +102,7 @@ const CadastroVantagem = () => {
             <TextField
               label="CNPJ da empresa"
               fullWidth
+              required
               margin="normal"
               minRows={3}
               value={cnpj}
@@ -114,6 +127,20 @@ const CadastroVantagem = () => {
           sx={{ width: "100%" }}
         >
           Vantagem cadastrada com sucesso!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={errorAlert}
+        autoHideDuration={4000}
+        onClose={() => setErrorAlert(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setErrorAlert(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
         </Alert>
       </Snackbar>
     </>
