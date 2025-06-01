@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { Container, Typography, Paper, Box, Alert } from "@mui/material";
 import Header from "../components/Header";
-import { MinusCircle, PlusCircle } from "react-feather";
+import { Send } from "react-feather";
 
 interface Transacao {
   id: number;
@@ -23,7 +23,7 @@ type Usuario = {
   // outros campos opcionais
 };
 
-const ExtratoAluno = () => {
+const ExtratoProfessor = () => {
   const { perfil } = useAuth();
   const [saldo, setSaldo] = useState(0);
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
@@ -37,9 +37,10 @@ const ExtratoAluno = () => {
     const carregarDados = async () => {
       try {
         const responseTransacoes = await axios.get(
-          `http://localhost:3001/transacao/destinatario/${perfil.usuario_id}`
+          `http://localhost:3001/transacao/remetente/${perfil.usuario_id}`
         );
         const transacoes = responseTransacoes.data;
+        console.log(transacoes);
 
         // 1. Coletar IDs únicos de usuários
         const idsUsuarios = [
@@ -138,28 +139,19 @@ const ExtratoAluno = () => {
                           display: "flex",
                           alignItems: "center",
                           gap: 1,
-                          color:
-                            transacao.quantidade_moedas > 0
-                              ? "green"
-                              : transacao.quantidade_moedas < 0
-                              ? "red"
-                              : "inherit",
+                          color: "blue",
                         }}
                       >
-                        {transacao.quantidade_moedas > 0 ? (
-                          <PlusCircle size={18} />
-                        ) : transacao.quantidade_moedas < 0 ? (
-                          <MinusCircle size={18} />
-                        ) : null}
+                        <Send/>
                         {transacao.mensagem}
                       </Typography>
                     )}
-                    {transacao.remetente && (
+                    {transacao.destinatario && (
                       <Typography variant="body2" color="text.secondary">
                         Valor:{" "}
                         <strong>{transacao.quantidade_moedas} moedas</strong>
                         <br />
-                        De: <strong>{transacao.remetente.nome}</strong>
+                        Para: <strong>{transacao.destinatario.nome}</strong>
                       </Typography>
                     )}
                     <Typography variant="body2" color="text.secondary">
@@ -180,4 +172,4 @@ const ExtratoAluno = () => {
   );
 };
 
-export default ExtratoAluno;
+export default ExtratoProfessor;
