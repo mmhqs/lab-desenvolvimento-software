@@ -1,4 +1,4 @@
-const transcacaoModel = require('../Models/transcacaoModel');
+const transcacaoModel = require('../Models/transacaoModel');
 
 const getAll = (req, res) => {
     transcacaoModel.getAll()
