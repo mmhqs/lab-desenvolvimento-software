@@ -38,7 +38,7 @@ const Homepage: React.FC = () => {
                 </Box>
               </Button>
             )}
-            ;{/* Resgatar vantagem e ver extrato (aluno) */}
+            {/* Resgatar vantagem e ver extrato (aluno) */}
             {perfil.cpf && (
               <>
                 <Button
@@ -68,7 +68,7 @@ const Homepage: React.FC = () => {
                     flexDirection="column"
                     alignItems="center"
                   >
-                    Ver extrato
+                    Consultar extrato
                     <Clipboard />
                   </Box>
                 </Button>
