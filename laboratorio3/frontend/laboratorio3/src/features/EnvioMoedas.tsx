@@ -3,6 +3,7 @@ import {
   Alert,
   Box,
   Button,
+  MenuItem,
   Paper,
   Snackbar,
   TextField,
@@ -11,51 +12,98 @@ import {
 import axios from "axios";
 import Header from "../components/Header";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 interface Aluno {
+  usuario_id: number;
+  nome: string;
+  email: string;
+  saldo_moedas: number;
+  // outros campos...
+}
+
+interface Usuario {
   id: number;
   nome: string;
-  saldo_moedas: number;
+  email: string;
+  // outros campos se necessário
 }
 
 const EnvioMoedas = () => {
-  const navigate = useNavigate();
-  const { user, perfil } = useAuth();
+  const { perfil } = useAuth();
   const [alunos, setAlunos] = useState<Aluno[]>([]);
   const [selectedAluno, setSelectedAluno] = useState<Aluno | null>(null);
   const [quantidadeMoedas, setQuantidadeMoedas] = useState("");
-  const [justificativa, setJustificativa] = useState("");
+  const [motivo, setMotivo] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorAlert, setErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [saldoAtual, setSaldoAtual] = useState(0);
+
+  // Busca o saldo
+  const buscarSaldoAtual = async () => {
+    const response = await axios.get(
+      `http://localhost:3001/professor/${perfil.cpf}`
+    );
+    setSaldoAtual(response.data);
+  };
 
   useEffect(() => {
-    // Verifica se o usuário é um professor
-    if (!user || !perfil.departamento) {
-      navigate("/home");
-      return;
+    buscarSaldoAtual();
+  });
+
+  // Busca a lista de alunos
+  const fetchAlunos = async () => {
+    try {
+      const responseAluno = await axios.get("http://localhost:3001/aluno");
+      const responseUsuario = await axios.get("http://localhost:3001/usuario");
+
+      const alunos = responseAluno.data;
+      const usuarios = responseUsuario.data;
+
+      // 1. Criar um mapa de usuários por id
+      const usuariosPorId = usuarios.reduce(
+        (map: Record<number, Usuario>, usuario: Usuario) => {
+          map[usuario.id] = usuario;
+          return map;
+        },
+        {} as Record<number, Usuario>
+      );
+
+      // 2. Enriquecer os alunos com os dados do usuário
+      const alunosComNome: Aluno[] = alunos.map((aluno: any) => ({
+        ...aluno,
+        nome: usuariosPorId[aluno.usuario_id]?.nome || "Desconhecido",
+        email: usuariosPorId[aluno.usuario_id]?.email || "",
+      }));
+
+      setAlunos(alunosComNome);
+    } catch (error) {
+      console.error("Erro ao buscar alunos:", error);
+      setErrorMessage("Erro ao carregar lista de alunos");
+      setErrorAlert(true);
     }
+  };
 
-    // Busca a lista de alunos
-    const fetchAlunos = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/aluno");
-        setAlunos(response.data);
-      } catch (error) {
-        console.error("Erro ao buscar alunos:", error);
-        setErrorMessage("Erro ao carregar lista de alunos");
-        setErrorAlert(true);
-      }
-    };
-
+  useEffect(() => {
     fetchAlunos();
-  }, [user, perfil, navigate]);
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    console.log("Aluno selecionado:", selectedAluno);
+    console.log("Alunos:", alunos);
+  }, [selectedAluno, alunos]);
+
+  // Limpa o formulário
+  const limparFormulario = () => {
+    setSelectedAluno(null);
+    setQuantidadeMoedas("");
+    setMotivo("");
+  };
+
+  const enviarMoedas = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedAluno || !quantidadeMoedas || !justificativa) {
+    if (!selectedAluno || !quantidadeMoedas || !motivo) {
       setErrorMessage("Por favor, preencha todos os campos");
       setErrorAlert(true);
       return;
@@ -69,32 +117,22 @@ const EnvioMoedas = () => {
     }
 
     try {
-      // Atualiza o saldo do aluno
-      await axios.patch(`http://localhost:3001/aluno/${selectedAluno.id}`, {
-        saldo_moedas: selectedAluno.saldo_moedas + quantidade,
-      });
-
-      // Atualiza o saldo do professor
-      await axios.patch(`http://localhost:3001/professor/${perfil.id}`, {
-        saldo_moedas: perfil.saldo_moedas - quantidade,
-      });
-
       // Registra a transação
-      await axios.post("http://localhost:3001/transacao", {
-        professor_id: perfil.id,
-        aluno_id: selectedAluno.id,
+      console.log("perfil.id: ", perfil.usuario_id);
+      console.log("selectedAluno.usuario_id: ", selectedAluno.usuario_id);
+      console.log("quantidade: ", quantidade);
+      console.log("motivo: ", motivo);
+      await axios.post("http://localhost:3001/professor/enviar-moedas", {
+        professor_id: perfil.usuario_id,
+        aluno_id: selectedAluno.usuario_id,
         quantidade: quantidade,
-        justificativa: justificativa,
+        motivo: motivo,
       });
 
       setAlertOpen(true);
       setSelectedAluno(null);
       setQuantidadeMoedas("");
-      setJustificativa("");
-
-      // Atualiza a lista de alunos
-      const response = await axios.get("http://localhost:3001/aluno");
-      setAlunos(response.data);
+      setMotivo("");
     } catch (error) {
       console.error("Erro ao enviar moedas:", error);
       setErrorMessage("Erro ao enviar moedas");
@@ -115,34 +153,39 @@ const EnvioMoedas = () => {
       >
         <Paper elevation={3} sx={{ padding: 4, width: 400 }}>
           <Typography variant="h5" align="center" gutterBottom>
-            Envio de Moedas
+            Envio de moedas
           </Typography>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={enviarMoedas}>
             <TextField
               select
               label="Aluno"
               fullWidth
               margin="normal"
-              value={selectedAluno?.id || ""}
+              value={selectedAluno ? String(selectedAluno.usuario_id) : ""}
               onChange={(e) => {
-                const aluno = alunos.find((a) => a.id === Number(e.target.value));
-                setSelectedAluno(aluno || null);
-              }}
-              SelectProps={{
-                native: true,
+                const id = Number(e.target.value);
+                const alunoSelecionado = alunos.find(
+                  (aluno) => aluno.usuario_id === id
+                );
+                setSelectedAluno(alunoSelecionado ?? null);
               }}
             >
-              <option value="">Selecione um aluno</option>
+              <MenuItem value="" disabled>
+                Selecione um aluno
+              </MenuItem>
               {alunos.map((aluno) => (
-                <option key={aluno.id} value={aluno.id}>
-                  {aluno.nome} (Saldo: {aluno.saldo_moedas} moedas)
-                </option>
+                <MenuItem
+                  key={aluno.usuario_id}
+                  value={String(aluno.usuario_id)}
+                >
+                  {aluno.nome}
+                </MenuItem>
               ))}
             </TextField>
 
             <TextField
-              label="Quantidade de Moedas"
+              label="Quantidade de moedas"
               type="number"
               fullWidth
               margin="normal"
@@ -152,19 +195,28 @@ const EnvioMoedas = () => {
             />
 
             <TextField
-              label="Justificativa"
+              label="Motivo do envio"
               fullWidth
               margin="normal"
               multiline
               rows={4}
-              value={justificativa}
-              onChange={(e) => setJustificativa(e.target.value)}
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
             />
 
             <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-              Enviar Moedas
+              Enviar moedas
             </Button>
           </form>
+          <Button
+            type="submit"
+            variant="outlined"
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={limparFormulario}
+          >
+            Limpar formulário
+          </Button>
         </Paper>
       </Box>
 
@@ -201,4 +253,4 @@ const EnvioMoedas = () => {
   );
 };
 
-export default EnvioMoedas; 
+export default EnvioMoedas;

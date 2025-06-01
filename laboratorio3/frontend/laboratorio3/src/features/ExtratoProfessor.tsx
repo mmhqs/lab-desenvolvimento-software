@@ -29,8 +29,20 @@ const ExtratoProfessor = () => {
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
   const [erro, setErro] = useState("");
 
+  const buscarSaldoAtual = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/professor/${perfil.cpf}`
+      );
+      console.log("Saldo atualizado:", response.data);
+      setSaldo(response.data.saldo_moedas);
+    } catch (error) {
+      console.error("Erro ao buscar saldo:", error);
+    }
+  };
+
   useEffect(() => {
-    setSaldo(perfil.saldo_moedas);
+    buscarSaldoAtual();
   });
 
   useEffect(() => {
@@ -40,7 +52,6 @@ const ExtratoProfessor = () => {
           `http://localhost:3001/transacao/remetente/${perfil.usuario_id}`
         );
         const transacoes = responseTransacoes.data;
-        console.log(transacoes);
 
         // 1. Coletar IDs únicos de usuários
         const idsUsuarios = [
@@ -76,8 +87,6 @@ const ExtratoProfessor = () => {
             destinatario: usuariosPorId[transacao.destinatario_id],
           })
         );
-
-        console.log(transacoesComUsuarios);
 
         setTransacoes(transacoesComUsuarios);
       } catch (error) {
@@ -142,7 +151,7 @@ const ExtratoProfessor = () => {
                           color: "blue",
                         }}
                       >
-                        <Send/>
+                        <Send />
                         {transacao.mensagem}
                       </Typography>
                     )}
