@@ -1,5 +1,5 @@
 import { Box, Button, Container, Typography } from "@mui/material";
-import { CheckCircle, Gift, Clipboard, UserCheck } from "react-feather";
+import { CheckCircle, Gift, Clipboard, UserCheck, DollarSign } from "react-feather";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -41,37 +41,75 @@ const Homepage: React.FC = () => {
             {/* Resgatar vantagem e ver extrato (aluno) */}
             {perfil.cpf && (
               <>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => navigate("/vantagem/resgate")}
-                  style={{ width: "10rem" }}
-                >
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                  >
-                    Resgatar vantagem
-                    <CheckCircle />
-                  </Box>
-                </Button>
+                {!perfil.departamento && (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/vantagem/resgate")}
+                      style={{ width: "10rem" }}
+                    >
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                      >
+                        Resgatar vantagem
+                        <CheckCircle />
+                      </Box>
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/extrato-aluno")}
+                      style={{ width: "10rem" }}
+                    >
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                      >
+                        Consultar extrato (aluno)
+                        <Clipboard />
+                      </Box>
+                    </Button>
+                  </>
+                )}
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => navigate("/extrato")}
-                  style={{ width: "10rem" }}
-                >
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                  >
-                    Consultar extrato
-                    <Clipboard />
-                  </Box>
-                </Button>
+                {perfil.departamento && (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/professor/extrato")}
+                      style={{ width: "10rem" }}
+                    >
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                      >
+                        Consultar extrato (professor)
+                        <Clipboard />
+                      </Box>
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/professor/envio-moedas")}
+                      style={{ width: "10rem" }}
+                    >
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                      >
+                        Enviar moedas
+                        <DollarSign />
+                      </Box>
+                    </Button>
+                  </>
+                )}
               </>
             )}
           </Box>
