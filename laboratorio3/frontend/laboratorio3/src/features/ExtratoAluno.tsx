@@ -30,12 +30,13 @@ const ExtratoAluno = () => {
   const [erro, setErro] = useState("");
 
   useEffect(() => {
-    setSaldo(perfil.saldo_moedas);
-  });
-
-  useEffect(() => {
     const carregarDados = async () => {
       try {
+        const responseSaldo = await axios.get(
+          `http://localhost:3001/aluno/${perfil.cpf}/saldo`
+        );
+        setSaldo(responseSaldo.data.saldo_moedas);
+
         const responseTransacoes = await axios.get(
           `http://localhost:3001/transacao/destinatario/${perfil.usuario_id}`
         );
