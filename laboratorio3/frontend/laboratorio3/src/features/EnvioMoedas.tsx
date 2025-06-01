@@ -163,12 +163,12 @@ const EnvioMoedas = () => {
           </Typography>
 
           {/* Saldo de moedas */}
-          <Typography variant="h6" gutterBottom>
-            Saldo atual
-          </Typography>
-          <Paper sx={{ p: 3, mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              {saldoAtual} moedas
+          <Paper sx={{ p: 3, mb: 4, backgroundColor: "#2e2e2e" }}>
+            <Typography variant="h6" gutterBottom color="white">
+              Saldo atual:
+            </Typography>
+            <Typography variant="h6" gutterBottom color="white">
+              <strong>{saldoAtual} moedas</strong>
             </Typography>
           </Paper>
 
@@ -206,7 +206,12 @@ const EnvioMoedas = () => {
               fullWidth
               margin="normal"
               value={quantidadeMoedas}
-              onChange={(e) => setQuantidadeMoedas(e.target.value)}
+              onChange={(e) => {
+                const valor = Number(e.target.value);
+                if (valor >= 1 || e.target.value === "") {
+                  setQuantidadeMoedas(e.target.value);
+                }
+              }}
               inputProps={{ min: 1 }}
             />
 
