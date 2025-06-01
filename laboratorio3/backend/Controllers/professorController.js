@@ -106,12 +106,14 @@ const del = (req, res) => {
 
 const enviarMoedas = async (req, res) => {
     const { professor_id, aluno_id, quantidade, motivo } = req.body;
-
+    const resultado = await professorModel.enviarMoedas(professor_id, aluno_id, quantidade, motivo);
+    
     try {
         const [professor, aluno] = await Promise.all([
             professorModel.getByUsuarioId(professor_id),
             alunoModel.getByUsuarioId(aluno_id)
         ]);
+
 
         if (!professor || !aluno) {
             return res.status(404).json({ error: "Professor ou aluno não encontrado." });
@@ -151,8 +153,8 @@ const enviarMoedas = async (req, res) => {
         await email.enviarEmail(aluno.email, assunto, corpo);
 
         res.status(200).json({
-            message: "Moedas enviadas e e-mail disparado!",
-            detalhes: { professor: professor.nome, moedas: quantidade }
+            message: "Moedas enviadas com sucesso e e-mail disparado!",
+            detalhes: resultado
         });
 
     } catch (err) {
