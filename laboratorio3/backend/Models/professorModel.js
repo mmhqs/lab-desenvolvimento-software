@@ -16,7 +16,12 @@ const getByCpf = async (cpf) => {
 };
 
 const getByUsuarioId = async (usuario_id) => {
-    const query = `SELECT * FROM ${table} WHERE usuario_id = ?`;
+    const query = `
+        SELECT p.*, u.* 
+        FROM ${table} p
+        JOIN usuario u ON p.usuario_id = u.id
+        WHERE p.usuario_id = ?
+    `;
     const [rows] = await conn.query(query, [usuario_id]);
     return rows[0];
 };
@@ -76,70 +81,60 @@ const del = async (cpf) => {
 };
 
 
-const enviarMoedas = async (req, res) => {
-    const { professor_id, aluno_id, quantidade, motivo } = req.body;
-
+const enviarMoedas = async (professor_id, aluno_id, quantidade, motivo) => {
     if (!professor_id || !aluno_id || !quantidade || quantidade <= 0) {
-        return res.status(400).json({ 
-            error: "Professor ID, Aluno ID e uma quantidade positiva de moedas são obrigatórios." 
-        });
+        throw new Error("Professor ID, Aluno ID e uma quantidade positiva de moedas são obrigatórios.");
     }
+
+    const [professor, aluno] = await Promise.all([
+        getByUsuarioId(professor_id),
+        alunoModel.getByUsuarioId(aluno_id)
+    ]);
+
+    if (!professor) throw new Error("Professor não encontrado.");
+    if (!aluno) throw new Error("Aluno não encontrado.");
+    if (professor.saldo_moedas < quantidade) throw new Error("Saldo de moedas insuficiente.");
+
+    const connection = await conn.getConnection();
+    await connection.beginTransaction();
 
     try {
-        const [professor, aluno] = await Promise.all([
-            getByUsuarioId(professor_id), // ✅ chamada direta da função local
-            alunoModel.getByUsuarioId(aluno_id)
-        ]);
+        await connection.query(
+            'UPDATE professor SET saldo_moedas = ? WHERE usuario_id = ?',
+            [professor.saldo_moedas - quantidade, professor_id]
+        );
 
-        if (!professor) return res.status(404).json({ error: "Professor não encontrado." });
-        if (!aluno) return res.status(404).json({ error: "Aluno não encontrado." });
+        await connection.query(
+            'UPDATE aluno SET saldo_moedas = ? WHERE usuario_id = ?',
+            [aluno.saldo_moedas + quantidade, aluno_id]
+        );
 
-        if (professor.saldo_moedas < quantidade) {
-            return res.status(400).json({ error: "Saldo de moedas insuficiente." });
-        }
+        const [result] = await connection.query(
+            `INSERT INTO transacao 
+             (quantidade_moedas, mensagem, remetente_id, destinatario_id, data)
+             VALUES (?, ?, ?, ?, now())`,
+            [quantidade, motivo || 'Transferência de moedas', professor_id, aluno_id]
+        );
 
-        const connection = await conn.getConnection();
-        await connection.beginTransaction();
+        await connection.commit();
+        connection.release();
 
-        try {
-            await connection.query(
-                'UPDATE professor SET saldo_moedas = ? WHERE usuario_id = ?',
-                [professor.saldo_moedas - quantidade, professor_id]
-            );
-
-            await connection.query(
-                'UPDATE aluno SET saldo_moedas = ? WHERE usuario_id = ?',
-                [aluno.saldo_moedas + quantidade, aluno_id]
-            );
-
-            const [result] = await connection.query(
-                `INSERT INTO transacao 
-                 (quantidade_moedas, mensagem, remetente_id, destinatario_id)
-                 VALUES (?, ?, ?, ?)`,
-                [quantidade, motivo || 'Transferência de moedas', professor_id, aluno_id]
-            );
-
-            await connection.commit();
-            connection.release();
-
-            return res.status(200).json({
-                message: "Moedas transferidas com sucesso.",
-                saldoProfessor: professor.saldo_moedas - quantidade,
-                saldoAluno: aluno.saldo_moedas + quantidade,
-                transacao_id: result.insertId
-            });
-
-        } catch (err) {
-            await connection.rollback();
-            connection.release();
-            throw err;
-        }
+        return {
+            message: "Moedas transferidas com sucesso.",
+            saldoProfessor: professor.saldo_moedas - quantidade,
+            saldoAluno: aluno.saldo_moedas + quantidade,
+            transacao_id: result.insertId,
+            professor,
+            aluno
+        };
 
     } catch (err) {
-        console.error('Erro ao enviar moedas:', err);
-        return res.status(500).json({ error: err.message || 'Erro interno ao processar a transferência.' });
+        await connection.rollback();
+        connection.release();
+        throw err;
     }
 };
+
 
 
 module.exports = {
