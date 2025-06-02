@@ -45,11 +45,14 @@ interface DadosProfessor {
   usuario_id: number;
   cpf: string;
   departamento: string;
+  saldo_moedas: number;
 }
 
 const CadastroUsuario = () => {
   const [tipoUsuario, setTipoUsuario] = useState("aluno");
   const [alertOpen, setAlertOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorOpen, setErrorOpen] = useState(false);
   const [form, setForm] = useState({
     nome: "",
     email: "",
@@ -103,6 +106,7 @@ const CadastroUsuario = () => {
           usuario_id: usuarioId,
           cpf: form.cpf,
           departamento: form.departamento,
+          saldo_moedas: 0
         };
 
         await axios.post(`http://localhost:3001/professor`, dadosProfessor);
@@ -121,6 +125,12 @@ const CadastroUsuario = () => {
       });
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        setErrorMessage("Já existe um usuário cadastrado com este CPF.");
+      } else {
+        setErrorMessage("Erro ao cadastrar usuário. Por favor, tente novamente.");
+      }
+      setErrorOpen(true);
     }
   };
 
@@ -251,6 +261,20 @@ const CadastroUsuario = () => {
           sx={{ width: "100%" }}
         >
           Usuário cadastrado com sucesso!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={errorOpen}
+        autoHideDuration={4000}
+        onClose={() => setErrorOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setErrorOpen(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
         </Alert>
       </Snackbar>
     </>
