@@ -68,6 +68,26 @@ const CadastroUsuario = () => {
     setForm({ ...form, [field]: value });
   };
 
+  const handleCpfChange = (value: string) => {
+    // Remove todos os caracteres não numéricos
+    const numbers = value.replace(/\D/g, '');
+    // Limita a 11 dígitos
+    const formattedCpf = numbers.slice(0, 11);
+    handleChange("cpf", formattedCpf);
+  };
+
+  const handleRgChange = (value: string) => {
+    // Permite letras e números, limita a 10 caracteres
+    const formattedRg = value.slice(0, 10);
+    handleChange("rg", formattedRg);
+  };
+
+  const handleCnpjChange = (value: string) => {
+    // Permite letras e números, limita a 15 caracteres
+    const formattedCnpj = value.slice(0, 15);
+    handleChange("cnpj", formattedCnpj);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -125,8 +145,14 @@ const CadastroUsuario = () => {
       });
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
-      if (axios.isAxiosError(error) && error.response?.status === 409) {
-        setErrorMessage("Já existe um usuário cadastrado com este CPF.");
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 409) {
+          setErrorMessage("Já existe um usuário cadastrado com este CPF.");
+        } else if (error.response?.status === 400) {
+          setErrorMessage(error.response.data.error || "Erro ao cadastrar usuário.");
+        } else {
+          setErrorMessage("Erro ao cadastrar usuário. Por favor, tente novamente.");
+        }
       } else {
         setErrorMessage("Erro ao cadastrar usuário. Por favor, tente novamente.");
       }
@@ -195,14 +221,18 @@ const CadastroUsuario = () => {
                   fullWidth
                   margin="normal"
                   value={form.cpf}
-                  onChange={(e) => handleChange("cpf", e.target.value)}
+                  onChange={(e) => handleCpfChange(e.target.value)}
+                  inputProps={{ maxLength: 11 }}
+                  helperText="Digite apenas números (máximo 11 dígitos)"
                 />
                 <TextField
                   label="RG"
                   fullWidth
                   margin="normal"
                   value={form.rg}
-                  onChange={(e) => handleChange("rg", e.target.value)}
+                  onChange={(e) => handleRgChange(e.target.value)}
+                  inputProps={{ maxLength: 10 }}
+                  helperText="Digite até 10 caracteres (letras ou números)"
                 />
                 <TextField
                   label="Endereço"
@@ -220,7 +250,9 @@ const CadastroUsuario = () => {
                 fullWidth
                 margin="normal"
                 value={form.cnpj}
-                onChange={(e) => handleChange("cnpj", e.target.value)}
+                onChange={(e) => handleCnpjChange(e.target.value)}
+                inputProps={{ maxLength: 15 }}
+                helperText="Digite até 15 caracteres (letras ou números)"
               />
             )}
 
@@ -231,7 +263,9 @@ const CadastroUsuario = () => {
                   fullWidth
                   margin="normal"
                   value={form.cpf}
-                  onChange={(e) => handleChange("cpf", e.target.value)}
+                  onChange={(e) => handleCpfChange(e.target.value)}
+                  inputProps={{ maxLength: 11 }}
+                  helperText="Digite apenas números (máximo 11 dígitos)"
                 />
                 <TextField
                   label="Departamento"
