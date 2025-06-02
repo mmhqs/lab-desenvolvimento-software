@@ -1,6 +1,6 @@
 const conn = require('./conexao_bd');
 
-const table = "transcacao";
+const table = "transacao";
 
 const getAll = async () => {
     const query = `SELECT * FROM ${table}`;

@@ -1,7 +1,7 @@
 var express = require('express');
 const router = express.Router();
 
-const transcacaoController = require('../Controllers/transcacaoController');
+const transcacaoController = require('../Controllers/transacaoController');
 
 router.get('/', (req, res) => {
     transcacaoController.getAll(req, res);
