@@ -1,0 +1,33 @@
+@startuml
+title Diagrama de Sequência - Consultar Extrato como Professor
+actor "Professor" as Professor
+
+participant "professor" as Routes
+participant "professorController" as Controller
+participant "professorModel" as Model
+
+ref over Professor: Realizar login
+
+' 1. Ver Extrato
+Professor -> Routes: 1: GET/transacoes/remetente/:remetente_id
+activate Routes
+
+Routes -> Controller: 1.1: getByRemetente(req, res)
+activate Controller
+
+Controller -> Model: 1.2: getByRemetente
+activate Model
+note right of Model
+Query de listagem:
+SELECT * FROM transcacao WHERE id = ?
+end note
+
+Model --> Controller: 1.3: transacoes
+
+deactivate Model
+Controller --> Routes: 1.4: res.status(200).json(data)
+
+Routes --> Professor: 1.5: res.status(200).json(data)
+deactivate Controller
+deactivate Routes
+@enduml

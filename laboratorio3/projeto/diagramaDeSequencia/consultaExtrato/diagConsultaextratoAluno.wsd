@@ -1,0 +1,35 @@
+@startuml
+title Diagrama de Sequência - Consultar Extrato como Aluno
+actor "Aluno" as Aluno
+
+participant "aluno" as Routes
+participant "alunoController" as Controller
+participant "alunoModel" as Model
+
+ref over Aluno: Realizar login
+
+' 1. Ver Extrato
+Aluno -> Routes: 1: GET/aluno/:cpf/saldo
+activate Routes
+Aluno -> Routes: 2: GET/aluno/:cpf/transacao
+
+Routes -> Controller: 1.1: getSaldo(req, res)
+activate Controller
+Routes -> Controller: 2.1: getTransacoes(req, res)
+
+Controller -> Model: 1.2: getByCpf
+activate Model
+Controller -> Model: 2.2: getTransacoes
+
+Model --> Controller: 1.3: saldo
+Model --> Controller: 2.3: transacoes
+
+deactivate Model
+Controller --> Routes: 1.4: res.status(200).json(data)
+Controller --> Routes: 2.4  res.status(200).json(data);
+
+Routes --> Aluno: 1.5: res.status(200).json(data)
+Routes --> Aluno: 2.5: res.status(200).json(data);
+deactivate Controller
+deactivate Routes
+@enduml
