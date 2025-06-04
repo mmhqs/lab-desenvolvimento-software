@@ -2,7 +2,6 @@ import {
   Alert,
   Box,
   Button,
-  Paper,
   Snackbar,
   TextField,
   Typography,
@@ -10,16 +9,18 @@ import {
 import Header from "../components/Header";
 import { useState } from "react";
 import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
 
 const CadastroVantagem = () => {
   const [descricao, setDescricao] = useState("");
   const [custo, setCusto] = useState<number | "">("");
   const [foto, setFoto] = useState("");
-  const [cnpj, setCnpj] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [errorAlert, setErrorAlert] = useState(false);
+  const { perfil } = useAuth();
 
+  const cnpj = perfil.cnpj;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -36,7 +37,7 @@ const CadastroVantagem = () => {
     };
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `http://localhost:3001/empresa/vantagens/${cnpj}`,
         dados
       );
@@ -45,7 +46,6 @@ const CadastroVantagem = () => {
       setDescricao("");
       setCusto("");
       setFoto("");
-      setCnpj("");
     } catch (error) {
       console.error("Erro ao cadastrar vantagem:", error);
     }
@@ -56,15 +56,18 @@ const CadastroVantagem = () => {
       <Header />;
       <Box
         display="flex"
+        flexDirection="column" // <-- empilha os filhos
         justifyContent="center"
         alignItems="center"
         height="100vh"
+        width="100%"
         bgcolor="#f5f5f5"
+        px={2}
       >
-        <Paper elevation={3} sx={{ padding: 4, width: 400 }}>
-          <Typography variant="h5" align="center" gutterBottom>
-            Cadastrar Vantagem
-          </Typography>
+        <Typography variant="h5" align="center" color="gray">
+          Cadastrar Vantagem
+        </Typography>
+        <Box width="100%">
           <form onSubmit={handleSubmit}>
             <TextField
               label="Descrição"
@@ -99,21 +102,11 @@ const CadastroVantagem = () => {
               value={foto}
               onChange={(e) => setFoto(e.target.value)}
             />
-            <TextField
-              label="CNPJ da empresa"
-              fullWidth
-              required
-              margin="normal"
-              minRows={3}
-              value={cnpj}
-              onChange={(e) => setCnpj(e.target.value)}
-            />
-
             <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
               Cadastrar
             </Button>
           </form>
-        </Paper>
+        </Box>
       </Box>
       <Snackbar
         open={alertOpen}

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import {
@@ -134,15 +133,21 @@ const ResgateVantagem: React.FC = () => {
         <div
           style={{
             display: "flex",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            flexWrap: "wrap",
             gap: "16px",
+            justifyContent: "center", // centraliza se tiver só 1
           }}
         >
           {vantagens.map((vantagem) => (
             <Card
               key={vantagem.id}
               onClick={() => handleSelecionar(vantagem)}
-              style={{ cursor: "pointer", width: "20%" }}
+              style={{
+                cursor: "pointer",
+                width: "250px", // largura fixa ou responsiva
+                flexGrow: 1,
+                maxWidth: "100%",
+              }}
             >
               <CardMedia
                 component="img"
