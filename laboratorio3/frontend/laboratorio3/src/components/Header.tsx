@@ -2,7 +2,6 @@ import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Home } from "react-feather";
-import { useEffect } from "react";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
