@@ -121,12 +121,14 @@ const removerMoedas = async (cpf, quantidade) => {
 };
 
 const resgatarVantagem = async (cpfAluno, idVantagem) => {
-
     await conn.query('START TRANSACTION');
     
     try {
         const [vantagem] = await conn.query(
-            'SELECT custo_moedas FROM vantagem WHERE id = ? FOR UPDATE',
+            `SELECT v.custo_moedas, v.empresa_cnpj, e.usuario_id as empresa_usuario_id
+             FROM vantagem v
+             JOIN empresa_parceira e ON v.empresa_cnpj = e.cnpj
+             WHERE v.id = ? FOR UPDATE`,
             [idVantagem]
         );
         
@@ -135,9 +137,10 @@ const resgatarVantagem = async (cpfAluno, idVantagem) => {
         }
         
         const custo = vantagem[0].custo_moedas;
+        const empresaUsuarioId = vantagem[0].empresa_usuario_id;
         
         const [aluno] = await conn.query(
-            'SELECT saldo_moedas FROM aluno WHERE cpf = ? FOR UPDATE',
+            'SELECT saldo_moedas, usuario_id FROM aluno WHERE cpf = ? FOR UPDATE',
             [cpfAluno]
         );
         
@@ -149,12 +152,19 @@ const resgatarVantagem = async (cpfAluno, idVantagem) => {
             throw new Error('Saldo insuficiente');
         }
         
+        const alunoUsuarioId = aluno[0].usuario_id;
+        
         await conn.query(
             'UPDATE aluno SET saldo_moedas = saldo_moedas - ? WHERE cpf = ?',
             [custo, cpfAluno]
         );
         
-        const [result] = await conn.query(
+        const [transacaoResult] = await conn.query(
+            'INSERT INTO transacao (quantidade_moedas, mensagem, data, remetente_id, destinatario_id) VALUES (?, ?, NOW(), ?, ?)',
+            [custo, `Resgate da vantagem #${idVantagem}`, empresaUsuarioId, alunoUsuarioId]
+        );
+        
+        const [vantagemResult] = await conn.query(
             'INSERT INTO aluno_vantagem (aluno_id, vantagem_id) VALUES (?, ?)',
             [cpfAluno, idVantagem]
         );
@@ -163,8 +173,7 @@ const resgatarVantagem = async (cpfAluno, idVantagem) => {
         
         return {
             success: true,
-            novoSaldo: aluno[0].saldo_moedas - custo,
-            registroId: result.insertId
+            novoSaldo: aluno[0].saldo_moedas - custo
         };
     } catch (error) {
         await conn.query('ROLLBACK');
