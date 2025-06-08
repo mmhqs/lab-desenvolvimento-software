@@ -118,6 +118,12 @@ const updateVantagem = async (vantagem_id, vantagemData) => {
     return result.affectedRows > 0;
 };
 
+const getVantagemById = async (vantagem_id) => {
+    const query = `SELECT * FROM vantagem WHERE id = ?`;
+    const [rows] = await conn.query(query, [vantagem_id]);
+    return rows[0] || null;
+};
+
 module.exports = {
     getAll,
     getByCnpj,
@@ -129,5 +135,6 @@ module.exports = {
     addVantagem,
     removeVantagem,
     getAllVantagens,
-    updateVantagem
+    updateVantagem,
+    getVantagemById
 };

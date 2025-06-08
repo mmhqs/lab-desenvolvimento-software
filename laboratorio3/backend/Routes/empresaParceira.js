@@ -15,6 +15,10 @@ router.get('/vantagens/todas', (req, res) => {
     empresaParceiraController.getAllVantagens(req, res);
 });
 
+router.get('/vantagens/:vantagem_id', (req, res) => {
+    empresaParceiraController.getVantagemById(req, res);
+});
+
 router.get('/usuario/:usuario_id', (req, res) => {
     empresaParceiraController.getByUsuarioId(req, res);
 });

@@ -131,6 +131,20 @@ const updateVantagem = (req, res) => {
         }));
 };
 
+const getVantagemById = (req, res) => {
+    const vantagem_id = req.params.vantagem_id;
+
+    empresaParceiraModel.getVantagemById(vantagem_id)
+        .then(data => {
+            if (data) return res.status(200).json(data);
+            return res.status(404).json("Vantagem não encontrada.");
+        })
+        .catch(err => res.status(500).json({ 
+            error: err.sqlMessage || err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        }));
+};
+
 module.exports = {
     getAll,
     getByCnpj,
@@ -141,5 +155,6 @@ module.exports = {
     addVantagem,
     removeVantagem,
     getAllVantagens,
-    updateVantagem
+    updateVantagem,
+    getVantagemById
 };

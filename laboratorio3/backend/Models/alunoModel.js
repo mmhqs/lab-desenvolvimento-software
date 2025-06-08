@@ -1,5 +1,7 @@
 const conn = require('./conexao_bd');
 
+const empresaModel = require('./empresaParceiraModel');
+
 const table = "aluno";
 
 const getAll = async () => {
