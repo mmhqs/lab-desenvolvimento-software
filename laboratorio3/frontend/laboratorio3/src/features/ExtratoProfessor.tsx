@@ -80,13 +80,17 @@ const ExtratoProfessor = () => {
         });
 
         // 4. Enriquecer transações
-        const transacoesComUsuarios = transacoes.map(
-          (transacao: Transacao) => ({
-            ...transacao,
-            remetente: usuariosPorId[transacao.remetente_id],
-            destinatario: usuariosPorId[transacao.destinatario_id],
-          })
-        );
+const transacoesComUsuarios = transacoes.map((transacao: Transacao) => {
+  const remetente = usuariosPorId[transacao.remetente_id];
+  const destinatario = usuariosPorId[transacao.destinatario_id];
+
+  return {
+    ...transacao,
+    remetente,
+    destinatario,
+    quantidade_moedas:-Math.abs(transacao.quantidade_moedas)
+  };
+});
 
         setTransacoes(transacoesComUsuarios);
       } catch (error) {
@@ -131,44 +135,50 @@ const ExtratoProfessor = () => {
         <Paper sx={{ p: 3, textAlign: "left" }}>
           {transacoes && transacoes.length > 0 ? (
             <Box component="ul" sx={{ listStyle: "none", pl: 0 }}>
-              {transacoes.map((transacao) => (
-                <li key={transacao.id}>
-                  <Box
-                    sx={{
-                      mb: 2,
-                      p: 2,
-                      border: "1px solid #ddd",
-                      borderRadius: 2,
-                    }}
-                  >
-                    {transacao.mensagem && (
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          color: "blue",
-                        }}
-                      >
-                        <Send />
-                        {transacao.mensagem}
-                      </Typography>
-                    )}
-                    {transacao.destinatario && (
+              {transacoes
+                .slice() // Cria uma cópia para evitar mutações no array original
+                .sort(
+                  (a, b) =>
+                    new Date(b.data).getTime() - new Date(a.data).getTime()
+                )
+                .map((transacao) => (
+                  <li key={transacao.id}>
+                    <Box
+                      sx={{
+                        mb: 2,
+                        p: 2,
+                        border: "1px solid #ddd",
+                        borderRadius: 2,
+                      }}
+                    >
+                      {transacao.mensagem && (
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            color: "blue",
+                          }}
+                        >
+                          <Send />
+                          {transacao.mensagem}
+                        </Typography>
+                      )}
+                      {transacao.destinatario && (
+                        <Typography variant="body2" color="text.secondary">
+                          Valor:{" "}
+                          <strong>{transacao.quantidade_moedas} moedas</strong>
+                          <br />
+                          Para: <strong>{transacao.destinatario.nome}</strong>
+                        </Typography>
+                      )}
                       <Typography variant="body2" color="text.secondary">
-                        Valor:{" "}
-                        <strong>{transacao.quantidade_moedas} moedas</strong>
-                        <br />
-                        Para: <strong>{transacao.destinatario.nome}</strong>
+                        Data: {new Date(transacao.data).toLocaleString()}
                       </Typography>
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      Data: {new Date(transacao.data).toLocaleString()}
-                    </Typography>
-                  </Box>
-                </li>
-              ))}
+                    </Box>
+                  </li>
+                ))}
             </Box>
           ) : (
             <Typography variant="body2" color="text.secondary">
