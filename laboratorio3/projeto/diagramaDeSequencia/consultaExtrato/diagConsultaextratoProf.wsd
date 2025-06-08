@@ -2,32 +2,49 @@
 title Diagrama de Sequência - Consultar Extrato como Professor
 actor "Professor" as Professor
 
-participant "professor" as Routes
-participant "professorController" as Controller
-participant "professorModel" as Model
+participant "AuthContext" as Auth
+participant "professorRoutes" as PRoutes
+participant "transacaoRoutes" as TRoutes
+participant "professorController" as PController
+participant "transacaoController" as TController
+participant "professorModel" as PModel
+participant "transacaoModel" as TModel
 
-ref over Professor: Realizar login
+Professor -> Auth: 1: POST/usuario/login
+activate Professor
 
-' 1. Ver Extrato
-Professor -> Routes: 1: GET/transacoes/remetente/:remetente_id
-activate Routes
+Professor -> PRoutes: 1: GET/professor/cpf
+activate PRoutes
+Professor -> TRoutes: 2: GET/transacao/remetente/id
+activate TRoutes
 
-Routes -> Controller: 1.1: getByRemetente(req, res)
-activate Controller
+PRoutes -> PController: 1.1: getByCpf(req, res)
+activate PController
+TRoutes -> TController: 2.1: getByRemetente(req, res)
+activate TController
 
-Controller -> Model: 1.2: getByRemetente
-activate Model
-note right of Model
-Query de listagem:
-SELECT * FROM transcacao WHERE id = ?
-end note
 
-Model --> Controller: 1.3: transacoes
+PController -> PModel: 1.2: getByCpf(cpf)
+activate PModel
+TController -> TModel: 2.2: getByRemetente(id)
+activate TModel
 
-deactivate Model
-Controller --> Routes: 1.4: res.status(200).json(data)
+' Agrupamento de sucesso/falha
+alt Professor encontrado
+    PModel --> PController: 1.3: saldo 
+    deactivate PModel
+    TModel --> TController: 2.3: transacoes  
+    deactivate TModel
 
-Routes --> Professor: 1.5: res.status(200).json(data)
-deactivate Controller
-deactivate Routes
+    PController --> PRoutes: 1.4: return res.status(200).json(data);
+    TController --> TRoutes: 2.4: return res.status(200).json(data);
+else Professor não encontrado
+    PController --> PRoutes: 1.5: return res.status(404).json("Professor não encontrado.");
+    deactivate PController
+    TController --> TRoutes: 2.5: return res.status(404).json("Nenhuma transação encontrada para este remetente.");
+    deactivate TController
+    deactivate PRoutes
+    deactivate TRoutes
+end alt
 @enduml
+
