@@ -69,13 +69,19 @@ const ExtratoAluno = () => {
         });
 
         // 4. Enriquecer transações
-        const transacoesComUsuarios = transacoes.map(
-          (transacao: Transacao) => ({
+        const transacoesComUsuarios = transacoes.map((transacao: Transacao) => {
+          const mensagem = transacao.mensagem || "";
+          const isResgate = mensagem.toLowerCase().includes("resgate");
+
+          return {
             ...transacao,
             remetente: usuariosPorId[transacao.remetente_id],
             destinatario: usuariosPorId[transacao.destinatario_id],
-          })
-        );
+            quantidade_moedas: isResgate
+              ? -Math.abs(transacao.quantidade_moedas) // força valor negativo
+              : transacao.quantidade_moedas,
+          };
+        });
         setTransacoes(transacoesComUsuarios);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -121,7 +127,10 @@ const ExtratoAluno = () => {
             <Box component="ul" sx={{ listStyle: "none", pl: 0 }}>
               {transacoes
                 .slice() // Cria uma cópia para evitar mutações no array original
-                .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
+                .sort(
+                  (a, b) =>
+                    new Date(b.data).getTime() - new Date(a.data).getTime()
+                )
                 .map((transacao) => (
                   <li key={transacao.id}>
                     <Box
