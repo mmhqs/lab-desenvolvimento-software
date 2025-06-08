@@ -1,0 +1,43 @@
+@startuml
+title Diagrama de Sequência - Resgate de Vantagem (Fluxo com Validações)
+
+actor Aluno as Aluno
+participant "alunoRoutes" as Routes
+participant "alunoController" as Controller
+participant "alunoModel" as Model
+
+ref over Aluno: Realizar login
+
+Aluno -> Routes: POST /resgatar-vantagem/:cpf
+activate Aluno
+activate Routes
+
+Routes -> Controller: resgatarVantagem(req, res)
+activate Controller
+
+Controller -> Model: resgatarVantagem(cpf, idVantagem)
+activate Model
+
+    Model --> Controller: Erro "Vantagem não encontrada"
+    Controller --> Routes: 404 Not Found
+    Routes --> Aluno: 404 Vantagem não encontrada
+    Model --> Controller: Erro "Aluno não encontrado"
+    Controller --> Routes: 404 Not Found
+    Routes --> Aluno: 404 Aluno não encontrado
+    Model --> Controller: Erro "Saldo insuficiente"
+    Controller --> Routes: 400 Bad Request
+    Routes --> Aluno: 400 Saldo insuficiente
+    Model -> Model: SELECT vantagem (FOR UPDATE)
+    Model -> Model: SELECT aluno (FOR UPDATE)
+    Model -> Model: UPDATE aluno (subtrai moedas)
+    Model -> Model: INSERT transação
+    Model -> Model: INSERT aluno_vantagem
+    Model --> Controller: {success: true, novoSaldo}
+    Controller --> Routes: 200 OK
+    Routes --> Aluno: 200 Vantagem resgatada!
+
+deactivate Model
+deactivate Controller
+deactivate Routes
+deactivate Aluno
+@enduml
