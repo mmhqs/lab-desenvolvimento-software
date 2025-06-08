@@ -31,4 +31,8 @@ router.post('/enviar-moedas', (req, res) => {
     professorController.enviarMoedas(req, res);
 });
 
+router.post('/adicionar-moedas', (req, res) => {
+    professorController.adicionarMoedas(req, res);
+});
+
 module.exports = router;

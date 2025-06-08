@@ -135,7 +135,32 @@ const enviarMoedas = async (professor_id, aluno_id, quantidade, motivo) => {
     }
 };
 
+const adicionarMoedas = async (professor_id, quantidade) => {
+    if (!professor_id || !quantidade || quantidade <= 0) {
+        throw new Error("ID do professor e uma quantidade positiva de moedas são obrigatórios.");
+    }
 
+    const professor = await getByCpf(professor_id);
+    if (!professor) throw new Error("Professor não encontrado.");
+
+    const query = `
+        UPDATE professor 
+        SET saldo_moedas = saldo_moedas + ?
+        WHERE cpf = ?
+    `;
+    
+    const [result] = await conn.query(query, [quantidade, professor_id]);
+    
+    if (result.affectedRows === 0) {
+        throw new Error("Falha ao adicionar moedas ao professor.");
+    }
+
+    return {
+        message: "Moedas adicionadas com sucesso.",
+        novoSaldo: professor.saldo_moedas + quantidade,
+        professor: await getByUsuarioId(professor_id)
+    };
+};
 
 module.exports = {
     getAll,
@@ -146,5 +171,6 @@ module.exports = {
     put,
     updateSaldoMoedas,
     del,
-    enviarMoedas
+    enviarMoedas,
+    adicionarMoedas
 };

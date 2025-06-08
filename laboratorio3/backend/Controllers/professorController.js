@@ -162,6 +162,24 @@ const enviarMoedas = async (req, res) => {
     }
 };
 
+const adicionarMoedas = async (req, res) => {
+    try {
+        const { professor_id, quantidade } = req.body;
+
+        if (!professor_id || !quantidade || quantidade <= 0) {
+            return res.status(400).json({ 
+                error: "ID do professor e uma quantidade positiva de moedas são obrigatórios." 
+            });
+        }
+
+        const resultado = await professorModel.adicionarMoedas(professor_id, quantidade);
+        res.status(200).json(resultado);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = {
     getAll,
     getByCpf,
@@ -169,5 +187,6 @@ module.exports = {
     post,
     put,
     del,
-    enviarMoedas
+    enviarMoedas,
+    adicionarMoedas
 };
