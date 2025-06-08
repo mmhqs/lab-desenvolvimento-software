@@ -119,53 +119,56 @@ const ExtratoAluno = () => {
         <Paper sx={{ p: 3, textAlign: "left" }}>
           {transacoes && transacoes.length > 0 ? (
             <Box component="ul" sx={{ listStyle: "none", pl: 0 }}>
-              {transacoes.map((transacao) => (
-                <li key={transacao.id}>
-                  <Box
-                    sx={{
-                      mb: 2,
-                      p: 2,
-                      border: "1px solid #ddd",
-                      borderRadius: 2,
-                    }}
-                  >
-                    {transacao.mensagem && (
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          color:
-                            transacao.quantidade_moedas > 0
-                              ? "green"
-                              : transacao.quantidade_moedas < 0
-                              ? "red"
-                              : "inherit",
-                        }}
-                      >
-                        {transacao.quantidade_moedas > 0 ? (
-                          <PlusCircle size={18} />
-                        ) : transacao.quantidade_moedas < 0 ? (
-                          <MinusCircle size={18} />
-                        ) : null}
-                        {transacao.mensagem}
-                      </Typography>
-                    )}
-                    {transacao.remetente && (
+              {transacoes
+                .slice() // Cria uma cópia para evitar mutações no array original
+                .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
+                .map((transacao) => (
+                  <li key={transacao.id}>
+                    <Box
+                      sx={{
+                        mb: 2,
+                        p: 2,
+                        border: "1px solid #ddd",
+                        borderRadius: 2,
+                      }}
+                    >
+                      {transacao.mensagem && (
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            color:
+                              transacao.quantidade_moedas > 0
+                                ? "green"
+                                : transacao.quantidade_moedas < 0
+                                ? "red"
+                                : "inherit",
+                          }}
+                        >
+                          {transacao.quantidade_moedas > 0 ? (
+                            <PlusCircle size={18} />
+                          ) : transacao.quantidade_moedas < 0 ? (
+                            <MinusCircle size={18} />
+                          ) : null}
+                          {transacao.mensagem}
+                        </Typography>
+                      )}
+                      {transacao.remetente && (
+                        <Typography variant="body2" color="text.secondary">
+                          Valor:{" "}
+                          <strong>{transacao.quantidade_moedas} moedas</strong>
+                          <br />
+                          De: <strong>{transacao.remetente.nome}</strong>
+                        </Typography>
+                      )}
                       <Typography variant="body2" color="text.secondary">
-                        Valor:{" "}
-                        <strong>{transacao.quantidade_moedas} moedas</strong>
-                        <br />
-                        De: <strong>{transacao.remetente.nome}</strong>
+                        Data: {new Date(transacao.data).toLocaleString()}
                       </Typography>
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      Data: {new Date(transacao.data).toLocaleString()}
-                    </Typography>
-                  </Box>
-                </li>
-              ))}
+                    </Box>
+                  </li>
+                ))}
             </Box>
           ) : (
             <Typography variant="body2" color="text.secondary">
