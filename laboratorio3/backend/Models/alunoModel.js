@@ -16,6 +16,22 @@ const getByCpf = async (cpf) => {
     return rows[0];
 };
 
+const getAlunoComUsuario = async (cpf) => {
+    const query = `
+        SELECT a.*, u.nome, u.email 
+        FROM aluno a
+        JOIN usuario u ON a.usuario_id = u.id
+        WHERE a.cpf = ?
+    `;
+    const [rows] = await conn.query(query, [cpf]);
+    return rows[0];
+};
+
+const getVantagemById = async (id) => {
+    const query = 'SELECT * FROM vantagem WHERE id = ?';
+    const [rows] = await conn.query(query, [id]);
+    return rows[0];
+};
 
 const getByUsuarioId = async (usuario_id) => {
     const query = `
@@ -207,5 +223,6 @@ module.exports = {
     removerMoedas,
     resgatarVantagem,
     getVantagensResgatadas,
-    getTransacoes
+    getTransacoes,
+    getAlunoComUsuario
 };

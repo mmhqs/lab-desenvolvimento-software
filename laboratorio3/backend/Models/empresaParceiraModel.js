@@ -75,20 +75,32 @@ const del = async (cnpj) => {
     return result.affectedRows > 0;
 };
 
+function gerarCupom() {
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let cupom = '';
+    for (let i = 0; i < 5; i++) {
+        cupom += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    return cupom;
+}
+
 const addVantagem = async (empresa_cnpj, vantagemData) => {
+    const cupom = gerarCupom();
+    
     const query = `
         INSERT INTO vantagem 
-        (id, custo_moedas, descricao, foto, empresa_cnpj)
-        VALUES (?, ?, ?, ?, ?)
+        (id, custo_moedas, descricao, foto, empresa_cnpj, cupom)
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
     const [result] = await conn.query(query, [
         vantagemData.id,
         vantagemData.custo_moedas,
         vantagemData.descricao,
         vantagemData.foto,
-        empresa_cnpj
+        empresa_cnpj,
+        cupom  
     ]);
-    return result;
+    return { ...result, cupom }; 
 };
 
 const removeVantagem = async (vantagem_id) => {

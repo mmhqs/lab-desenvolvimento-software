@@ -51,4 +51,8 @@ router.get('/vantagens-resgatadas/:cpf', (req, res) => {
     alunoController.getVantagensResgatadas(req, res);
 });
 
+router.get('/vantagens-resgatadas/:cpf', (req, res) => {
+    alunoController.getVantagensResgatadas(req, res);
+});
+
 module.exports = router;

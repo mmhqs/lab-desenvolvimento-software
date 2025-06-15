@@ -1,4 +1,6 @@
 const alunoModel = require('../Models/alunoModel');
+const empresaParceiraModel = require('../Models/empresaParceiraModel');
+const email = require('../middlewares/email');
 
 const getAll = (req, res) => {
     alunoModel.getAll()
@@ -148,12 +150,72 @@ const resgatarVantagem = (req, res) => {
     }
 
     alunoModel.resgatarVantagem(cpf, id_vantagem)
-        .then(result => {
-            res.status(200).json({
-                message: "Vantagem resgatada com sucesso!",
-                novoSaldo: result.novoSaldo,
-                registroId: result.registroId
-            });
+        .then(async (result) => {
+            const [aluno, vantagem] = await Promise.all([
+                alunoModel.getAlunoComUsuario(cpf),
+                empresaParceiraModel.getVantagemById(id_vantagem)
+            ]);
+
+            if (!aluno || !vantagem) {
+                console.error('Informações incompletas para envio de email');
+                return res.status(200).json({
+                    message: "Vantagem resgatada com sucesso! (email não enviado)",
+                    novoSaldo: result.novoSaldo,
+                    registroId: result.registroId
+                });
+            }
+
+            const assunto = `Confirmação de Resgate - ${vantagem.descricao}`;
+            const corpo = `
+                <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                    <div style="background-color: #1a73e8; padding: 20px; text-align: center;">
+                        <h1 style="color: white; margin: 0;">🎉 Vantagem Resgatada!</h1>
+                    </div>
+                    
+                    <div style="padding: 25px;">
+                        <p style="font-size: 16px;">Olá, <strong>${aluno.nome}</strong>!</p>
+                        
+                        <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px; margin: 15px 0; border-radius: 0 4px 4px 0;">
+                            <p style="margin: 0; color: #1a73e8; font-weight: bold;">
+                                Você resgatou com sucesso a vantagem "${vantagem.id}"!
+                            </p>
+                        </div>
+                        
+                        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                            <p style="margin: 0;"><strong>Detalhes do resgate:</strong></p>
+                            <ul style="margin: 5px 0 0 0; padding-left: 20px;">
+                                <li><strong>Descrição:</strong> ${vantagem.descricao}</li>
+                                <li><strong>Custo:</strong> ${vantagem.custo_moedas} moedas</li>
+                                <li><strong>Saldo restante:</strong> ${result.novoSaldo} moedas</li>
+                                <li><strong>Data:</strong> ${new Date().toLocaleString()}</li>
+                            </ul>
+                        </div>
+                        
+                        <p style="font-size: 15px;">Aproveite sua vantagem e continue acumulando moedas!</p>
+                        
+                    </div>
+                    
+                    <div style="background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #70757a; border-top: 1px solid #e0e0e0;">
+                        <p style="margin: 0;">Sistema de Moedas Acadêmicas</p>
+                    </div>
+                </div>
+            `;
+
+            try {
+                await email.enviarEmail(aluno.email, assunto, corpo);
+                res.status(200).json({
+                    message: "Vantagem resgatada com sucesso e confirmação enviada por email!",
+                    novoSaldo: result.novoSaldo,
+                    registroId: result.registroId
+                });
+            } catch (emailError) {
+                console.error('Erro ao enviar email:', emailError);
+                res.status(200).json({
+                    message: "Vantagem resgatada com sucesso! (erro no envio do email de confirmação)",
+                    novoSaldo: result.novoSaldo,
+                    registroId: result.registroId
+                });
+            }
         })
         .catch(err => {
             if (err.message === 'Vantagem não encontrada') {
