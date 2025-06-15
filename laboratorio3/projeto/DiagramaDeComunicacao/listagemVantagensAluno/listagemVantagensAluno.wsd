@@ -1,9 +1,9 @@
 @startuml
 skinparam linestyle ortho
 Actor "Aluno" as aluno
-rectangle "Empresa Parceira" as routes
-rectangle "empresaParceiraController" as controller
-rectangle "empresaParceiraModel" as model
+rectangle "<u> empresaParceira" as routes
+rectangle "<u>empresaParceiraController" as controller
+rectangle "<u>empresaParceiraModel" as model
 
 aluno -right-> routes: 1.1 GET/empresa/vantagens/todas 
 routes -right-> controller: 1.2 getAllVantagens(req, res) 
