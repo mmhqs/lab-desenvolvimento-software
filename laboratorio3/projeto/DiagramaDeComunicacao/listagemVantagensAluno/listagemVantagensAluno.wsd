@@ -1,0 +1,13 @@
+@startuml
+skinparam linestyle ortho
+Actor "Aluno" as aluno
+rectangle "Empresa Parceira" as routes
+rectangle "empresaParceiraController" as controller
+rectangle "empresaParceiraModel" as model
+
+aluno -right-> routes: 1.1 GET/empresa/vantagens/todas 
+routes -right-> controller: 1.2 getAllVantagens(req, res) 
+controller -right-> model: 1.3 getAllVantagens 
+model -left-> controller: 1.4 vantagens
+controller -left-> routes:  res.status(200).json(data)
+@enduml
