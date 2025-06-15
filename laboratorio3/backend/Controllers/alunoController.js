@@ -184,6 +184,7 @@ const resgatarVantagem = (req, res) => {
                         <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
                             <p style="margin: 0;"><strong>Detalhes do resgate:</strong></p>
                             <ul style="margin: 5px 0 0 0; padding-left: 20px;">
+                                <li><strong>Cupom para uso físico:</strong> ${vantagem.cupom}</li>
                                 <li><strong>Descrição:</strong> ${vantagem.descricao}</li>
                                 <li><strong>Custo:</strong> ${vantagem.custo_moedas} moedas</li>
                                 <li><strong>Saldo restante:</strong> ${result.novoSaldo} moedas</li>
