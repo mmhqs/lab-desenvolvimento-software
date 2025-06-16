@@ -7,5 +7,5 @@ rectangle "empresaParceiraModel" as model
 
 aluno -right-> routes: 1 GET/empresa/vantagens/todas 
 routes -right-> controller: 1.1 getAllVantagens(req, res) 
-controller -right-> model: 1.1.1 getAllVantagens 
+controller -right-> model: 1.1.1 getAllVantagens()
 @enduml

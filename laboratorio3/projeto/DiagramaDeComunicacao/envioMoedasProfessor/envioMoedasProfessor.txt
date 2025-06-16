@@ -15,5 +15,5 @@ controller --> alunomodel: 1.1.3 getByUsuarioId(aluno_id)
 controller --> helper: 1.1.4 enviarEmail(destinatario, assunto, corpo)
 helper --> aluno: 1.1.4.1 enviar Email 
 model --> model: 1.1.1.1 getByUsuarioId(professor_id)
-model --> alunomodel: 1.1.1.1.1 getByUsuarioId(aluno_id)
+model --> alunomodel: 1.1.1.2 getByUsuarioId(aluno_id)
 @enduml
