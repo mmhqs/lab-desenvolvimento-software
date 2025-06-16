@@ -1,0 +1,13 @@
+@startuml
+skinparam linestyle ortho
+Actor "Aluno" as aluno
+rectangle "<u> aluno" as routes
+rectangle "<u>alunoController" as controller
+rectangle "<u>email" as middleware
+
+aluno -right-> routes: 1.1 POST/resgatar-vantagem/:cpf 
+routes -right-> controller: 1.2 resgatarVantagem(req, res) 
+controller -right-> middleware: 1.3 enviarEmail   
+middleware -left-> controller: 1.4  E-mail enviado para ${destinatario}
+controller -left-> routes:  1.5 Vantagem resgatada com sucesso e confirmação enviada por email
+@enduml

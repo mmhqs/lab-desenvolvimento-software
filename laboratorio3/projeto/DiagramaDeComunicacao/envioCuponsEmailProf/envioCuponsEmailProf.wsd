@@ -1,0 +1,13 @@
+@startuml
+skinparam linestyle ortho
+Actor "Professor" as prof
+rectangle "<u> professor" as routes
+rectangle "<u>professorController" as controller
+rectangle "<u>email" as middleware
+
+prof -right-> routes: 1.1 POST/enviar-moedas
+routes -right-> controller: 1.2 enviarMoedas(req, res) 
+controller -right-> middleware: 1.3 enviarEmail   
+middleware -left-> controller: 1.4  E-mail enviado para ${destinatario}
+controller -left-> routes:  1.5 Moedas enviadas com sucesso e e-mail disparado!
+@enduml
