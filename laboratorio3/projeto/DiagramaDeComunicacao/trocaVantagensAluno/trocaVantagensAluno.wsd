@@ -1,13 +1,15 @@
 @startuml
 skinparam linestyle ortho
 actor "Aluno" as aluno
-rectangle "<u> alunoRoutes" as routes
-rectangle "<u> alunoController" as controller
-rectangle "<u> alunoModel" as model
+rectangle "<u> :aluno" as routes
+rectangle "<u> :alunoController" as controller
+rectangle " alunoModel" as model
+rectangle " empresaParceiraModel" as parceiramodel
+rectangle " helper" as helper
 
-aluno -right-> routes: 1.1 POST/resgatar-vantagem/:cpf 
-routes -right-> controller: 1.2 resgatarVantagem(req, res) 
-controller -right-> model: 1.3 resgatarVantagem(cpf, idVantagem) 
-model -left-> controller: 1.4 {success: true, novoSaldo}
-controller -left-> routes:  1.5 res.status(200).json(data)
+aluno -right-> routes: 1 POST/resgatar-vantagem/:cpf 
+routes -right-> controller: 1.1 resgatarVantagem(req, res) 
+controller -right-> model: 1.1.1 resgatarVantagem(cpf, idVantagem) // 1.1.2 getAlunoComUsuario(cpf) 
+controller --> parceiramodel: 1.1.3 getVantagemById(id_vantagem)
+controller --> helper: 1.1.4 enviarEmail(destinatario, assunto, corpo)
 @enduml

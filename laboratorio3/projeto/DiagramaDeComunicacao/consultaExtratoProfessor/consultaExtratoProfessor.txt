@@ -1,13 +1,11 @@
 @startuml
 skinparam linestyle ortho
 actor "Professor" as professor
-rectangle "<u> transacaoRoute" as route
-rectangle "<u> transacaoController" as controller
-rectangle "<u> transacaoModel" as model
+rectangle "<u> :transacao" as route
+rectangle "<u> :transacaoController" as controller
+rectangle " transacaoModel" as model
 
-professor -right-> route: 1.1 GET/remetente/:remetente_id
-route -right-> controller: 1.2 getByRemetente(req, res) 
-controller -right-> model: 1.3 getByRemetente(remetente_id)
-model -left-> controller: 1.4 transactions
-controller -left-> route:  1.5 res.status(200).json(data)
+professor -right-> route: 1 GET/remetente/:remetente_id
+route -right-> controller: 1.1 getByRemetente(req, res) 
+controller -right-> model: 1.1.1 getByRemetente(remetente_id)
 @enduml

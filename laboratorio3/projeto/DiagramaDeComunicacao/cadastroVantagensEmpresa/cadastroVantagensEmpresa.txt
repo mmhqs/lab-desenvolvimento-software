@@ -1,13 +1,12 @@
 @startuml
 skinparam linestyle ortho
 actor "EmpresaParceira" as empresa
-rectangle "<u> transacaoRoute" as route
-rectangle "<u> transacaoController" as controller
-rectangle "<u> transacaoModel" as model
+rectangle "<u> :empresaParceira" as route
+rectangle "<u> :empresaParceiraController" as controller
+rectangle "empresaParceiraModel" as model
 
-empresa -right-> route: 1.1 POST/vantagens/:cnpj
-route -right-> controller: 1.2 addVantagem(req, res) 
-controller -right-> model: 1.3 addVantagem(empresa_cnpj, vantagemData)
-model -left-> controller: 1.4 vantagemData.id, vantagemData.custo_moedas, vantagemData.descricao, vantagemData.foto, empresa_cnpj
-controller -left-> route:  1.5 res.status(201).json("Vantagem adicionada com sucesso."))
+empresa -right-> route: 1 POST/vantagens/:cnpj
+route -right-> controller: 1.1 addVantagem(req, res) 
+controller -right-> model: 1.1.1 addVantagem(empresa_cnpj, vantagemData)
+model -right-> model: 1.1.1.1 gerarCupom()
 @enduml
