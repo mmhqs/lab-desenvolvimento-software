@@ -17,6 +17,17 @@ const getByCnpj = async (cnpj) => {
     };
 };
 
+const getEmpresaComUsuarioByCnpj = async (cnpj) => {
+    const query = `
+        SELECT e.*, u.email 
+        FROM empresa_parceira e
+        JOIN usuario u ON e.usuario_id = u.id
+        WHERE e.cnpj = ?
+    `;
+    const [rows] = await conn.query(query, [cnpj]);
+    return rows[0];
+};
+
 const getAll = async () => {
     const empresasQuery = `SELECT * FROM ${table}`;
     const [empresasRows] = await conn.query(empresasQuery);
@@ -148,5 +159,6 @@ module.exports = {
     removeVantagem,
     getAllVantagens,
     updateVantagem,
-    getVantagemById
+    getVantagemById,
+    getEmpresaComUsuarioByCnpj
 };
