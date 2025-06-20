@@ -1,0 +1,78 @@
+CREATE DATABASE IF NOT EXISTS cleito;
+USE cleito;
+
+CREATE TABLE `usuario` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `aluno` (
+  `cpf` varchar(14) NOT NULL,
+  `usuario_id` int NOT NULL,
+  `rg` varchar(12) NOT NULL,
+  `endereco` varchar(200) NOT NULL,
+  `saldo_moedas` int DEFAULT NULL,
+  PRIMARY KEY (`cpf`),
+  UNIQUE KEY `cpf_UNIQUE` (`cpf`),
+  UNIQUE KEY `rg_UNIQUE` (`rg`),
+  KEY `usuario_id_idx` (`usuario_id`),
+  CONSTRAINT `usuario_id` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`)
+);
+
+CREATE TABLE `empresa_parceira` (
+  `cnpj` varchar(18) NOT NULL,
+  `usuario_id` int DEFAULT NULL,
+  PRIMARY KEY (`cnpj`),
+  KEY `usuario_Id_idx` (`usuario_id`),
+  CONSTRAINT `id_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`)
+);
+
+CREATE TABLE `vantagem` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `custo_moedas` int NOT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  `foto` varchar(255) DEFAULT NULL,
+  `cupom` varchar(5) DEFAULT NULL,
+  `empresa_cnpj` varchar(18) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `empresa_id_idx` (`empresa_cnpj`),
+  CONSTRAINT `empresa_id` FOREIGN KEY (`empresa_cnpj`) REFERENCES `empresa_parceira` (`cnpj`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `aluno_vantagem` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `aluno_id` varchar(25) NOT NULL,
+  `vantagem_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_aluno_idx` (`aluno_id`),
+  KEY `id_vantagem_idx` (`vantagem_id`),
+  CONSTRAINT `id_aluno` FOREIGN KEY (`aluno_id`) REFERENCES `aluno` (`cpf`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `id_vantagem` FOREIGN KEY (`vantagem_id`) REFERENCES `vantagem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE `professor` (
+  `cpf` varchar(18) NOT NULL,
+  `departamento` varchar(45) NOT NULL,
+  `saldo_moedas` int NOT NULL,
+  `usuario_id` int NOT NULL,
+  PRIMARY KEY (`cpf`),
+  KEY `usu_id_idx` (`usuario_id`),
+  CONSTRAINT `usu_id` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`)
+);
+
+CREATE TABLE `transacao` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `quantidade_moedas` int NOT NULL,
+  `mensagem` varchar(255) NOT NULL,
+  `data` datetime DEFAULT NULL,
+  `remetente_id` int NOT NULL,
+  `destinatario_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `aa_id_idx` (`remetente_id`),
+  KEY `aaa_id_idx` (`destinatario_id`),
+  CONSTRAINT `aa_id` FOREIGN KEY (`remetente_id`) REFERENCES `usuario` (`id`),
+  CONSTRAINT `aaa_id` FOREIGN KEY (`destinatario_id`) REFERENCES `usuario` (`id`)
+)

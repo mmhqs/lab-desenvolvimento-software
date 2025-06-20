@@ -63,3 +63,12 @@ Para torná-las disponíveis para resgate pelos alunos.
 Como empresa parceira,
 Eu quero **gerenciar as regras de distribuição de moedas**
 Para garantir justiça e transparência no sistema de recompensas.
+
+## Como utilizar
+**Abra o projeto**
+**Navegue até o backend cd code/backend**
+**Instale as dependências do backend npm i**
+**Configure o .env com as informações para o envio de email**
+**Configure o bd em backend/models/conexao_db.js**
+**Execute a query de criação do banco no mysql (arquivo nomeado de query.txt na pasta BackEnd)**
+**Execute o backend npm start**
