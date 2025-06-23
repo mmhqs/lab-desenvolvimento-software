@@ -1,6 +1,7 @@
 const alunoModel = require('../Models/alunoModel');
 const empresaParceiraModel = require('../Models/empresaParceiraModel');
 const email = require('../middlewares/email');
+const alunoResgateService = require('../Services/alunoResgateService');
 
 const getAll = (req, res) => {
     alunoModel.getAll()
@@ -151,142 +152,30 @@ const resgatarVantagem = (req, res) => {
 
     alunoModel.resgatarVantagem(cpf, id_vantagem)
         .then(async (result) => {
-            // Primeiro obtemos a vantagem para pegar o CNPJ da empresa
-            const vantagem = await empresaParceiraModel.getVantagemById(id_vantagem);
-            if (!vantagem) {
-                console.error('Vantagem não encontrada');
-                return res.status(200).json({
-                    message: "Vantagem resgatada com sucesso! (email não enviado)",
-                    novoSaldo: result.novoSaldo,
-                    registroId: result.registroId
-                });
-            }
-
-            // Agora obtemos o aluno e a empresa em paralelo
-            const [aluno, empresa] = await Promise.all([
-                alunoModel.getAlunoComUsuario(cpf),
-                empresaParceiraModel.getEmpresaComUsuarioByCnpj(vantagem.empresa_cnpj)
-            ]);
-
-            if (!aluno || !empresa) {
-                console.error('Informações incompletas para envio de email');
-                return res.status(200).json({
-                    message: "Vantagem resgatada com sucesso! (email não enviado)",
-                    novoSaldo: result.novoSaldo,
-                    registroId: result.registroId
-                });
-            }
-
-            // Restante do código para enviar emails...
-            const assuntoAluno = `Confirmação de Resgate - ${vantagem.descricao}`;
-            const corpoAluno = `
-                <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-                    <div style="background-color: #1a73e8; padding: 20px; text-align: center;">
-                        <h1 style="color: white; margin: 0;">🎉 Vantagem Resgatada!</h1>
-                    </div>
-                    
-                    <div style="padding: 25px;">
-                        <p style="font-size: 16px;">Olá, <strong>${aluno.nome}</strong>!</p>
-                        
-                        <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px; margin: 15px 0; border-radius: 0 4px 4px 0;">
-                            <p style="margin: 0; color: #1a73e8; font-weight: bold;">
-                                Você resgatou com sucesso a vantagem "${vantagem.descricao}" da empresa ${empresa.nome_fantasia}!
-                            </p>
-                        </div>
-                        
-                        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                            <p style="margin: 0;"><strong>Detalhes do resgate:</strong></p>
-                            <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-                                <li><strong>Cupom para uso físico:</strong> ${vantagem.cupom}</li>
-                                <li><strong>Descrição:</strong> ${vantagem.descricao}</li>
-                                <li><strong>Custo:</strong> ${vantagem.custo_moedas} moedas</li>
-                                <li><strong>Saldo restante:</strong> ${result.novoSaldo} moedas</li>
-                                <li><strong>Data:</strong> ${new Date().toLocaleString()}</li>
-                            </ul>
-                        </div>
-                        
-                        <p style="font-size: 15px;">Aproveite sua vantagem e continue acumulando moedas!</p>
-                        
-                    </div>
-                    
-                    <div style="background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #70757a; border-top: 1px solid #e0e0e0;">
-                        <p style="margin: 0;">Sistema de Moedas Acadêmicas</p>
-                    </div>
-                </div>
-            `;
-
-            const assuntoEmpresa = `Novo resgate de vantagem - ${vantagem.descricao}`;
-            const corpoEmpresa = `
-                <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-                    <div style="background-color: #1a73e8; padding: 20px; text-align: center;">
-                        <h1 style="color: white; margin: 0;">🛍️ Novo Resgate de Vantagem</h1>
-                    </div>
-                    
-                    <div style="padding: 25px;">
-                        <p style="font-size: 16px;">Olá!</p>
-                        
-                        <div style="background-color: #e8f0fe; border-left: 4px solid #1a73e8; padding: 12px; margin: 15px 0; border-radius: 0 4px 4px 0;">
-                            <p style="margin: 0; color: #1a73e8; font-weight: bold;">
-                                O aluno ${aluno.nome} resgatou a vantagem "${vantagem.descricao}"!
-                            </p>
-                        </div>
-                        
-                        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                            <p style="margin: 0;"><strong>Detalhes do resgate:</strong></p>
-                            <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-                                <li><strong>Cupom:</strong> ${vantagem.cupom}</li>
-                                <li><strong>Descrição:</strong> ${vantagem.descricao}</li>
-                                <li><strong>Valor em moedas:</strong> ${vantagem.custo_moedas}</li>
-                                <li><strong>Nome do aluno:</strong> ${aluno.nome}</li>
-                                <li><strong>Email do aluno:</strong> ${aluno.email}</li>
-                                <li><strong>Data:</strong> ${new Date().toLocaleString()}</li>
-                            </ul>
-                        </div>
-                        
-                        <p style="font-size: 15px;">Este é um email de notificação para informar sobre o resgate da vantagem.</p>
-                        
-                    </div>
-                    
-                    <div style="background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #70757a; border-top: 1px solid #e0e0e0;">
-                        <p style="margin: 0;">Sistema de Moedas Acadêmicas</p>
-                    </div>
-                </div>
-            `;
-
             try {
-                await Promise.all([
-                    email.enviarEmail(aluno.email, assuntoAluno, corpoAluno),
-                    email.enviarEmail(empresa.email, assuntoEmpresa, corpoEmpresa)
-                ]);
-                
-                res.status(200).json({
-                    message: "Vantagem resgatada com sucesso e confirmações enviadas por email!",
+                const retorno = await alunoResgateService.processarResgateDeVantagem(cpf, id_vantagem, result);
+
+                return res.status(200).json({
+                    message: retorno.mensagem,
                     novoSaldo: result.novoSaldo,
                     registroId: result.registroId
                 });
+
             } catch (emailError) {
-                console.error('Erro ao enviar email:', emailError);
-                res.status(200).json({
-                    message: "Vantagem resgatada com sucesso! (erro no envio de um ou mais emails de confirmação)",
+                return res.status(200).json({
+                    message: "Vantagem resgatada com sucesso! (erro no envio de e-mails)",
                     novoSaldo: result.novoSaldo,
                     registroId: result.registroId
                 });
             }
         })
         .catch(err => {
-            if (err.message === 'Vantagem não encontrada') {
-                return res.status(404).json({ error: err.message });
-            }
-            if (err.message === 'Aluno não encontrado') {
-                return res.status(404).json({ error: err.message });
-            }
-            if (err.message === 'Saldo insuficiente') {
-                return res.status(400).json({ error: err.message });
-            }
-            console.error('Erro ao resgatar vantagem:', err);
-            res.status(500).json({ error: err['sqlMessage'] || 'Erro interno do servidor' });
+            res.status(err.message === 'Saldo insuficiente' ? 400 : 500).json({
+                error: err.message || 'Erro interno ao resgatar vantagem.'
+            });
         });
 };
+
 
 
 const getVantagensResgatadas = (req, res) => {
