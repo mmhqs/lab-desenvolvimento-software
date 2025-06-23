@@ -1,6 +1,6 @@
 const alunoModel = require('../Models/alunoModel');
 const empresaParceiraModel = require('../Models/empresaParceiraModel');
-const email = require('../middlewares/email');
+const email = require('../services/emailService');
 
 const getAll = (req, res) => {
     alunoModel.getAll()
