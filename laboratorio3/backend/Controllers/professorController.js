@@ -1,7 +1,7 @@
 const professorModel = require('../Models/professorModel');
 const usuarioModel = require('../Models/usuarioModel');
 const alunoModel = require('../Models/alunoModel');
-const email = require('../middlewares/email');
+const email = require('../services/emailService');
 
 const getAll = (req, res) => {
     professorModel.getAll()
